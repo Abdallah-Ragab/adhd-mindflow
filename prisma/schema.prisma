@@ -41,7 +41,6 @@ model Task {
   schedule  Schedule?
   startDate DateTime?
   endDate   DateTime?
-  Timer     Timer?
 }
 
 model TaskLog {
@@ -52,7 +51,7 @@ model TaskLog {
   updatedAt DateTime @updatedAt
 
   // Time Based
-  time  DateTime?
+  timer Timer?
   // Count Based
   count Int
 
@@ -62,10 +61,11 @@ model TaskLog {
 model Timer {
   id        Int      @id @default(autoincrement())
   startTime DateTime
-  on        Boolean
   onSince   DateTime
-  Task      Task     @relation(fields: [taskId], references: [id])
-  taskId    Int      @unique
+  elapsed   Int
+  on        Boolean
+  log       TaskLog  @relation(fields: [logId], references: [id])
+  logId     Int      @unique
 }
 
 model Schedule {
