@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  name     String?
+  password String?
+  tasks    Task[]
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  criteria Criteria
+  // Time Based
+  goalTime DateTime?
+  timer    Timer?
+  // Count Based
+  goalCount Int?
+  count    Int?
+  // Check Based
+  check    Boolean?
+
+  frequency Frequency
+  // Onetime
+  dueDate   DateTime? @default(now())
+  // Recurring
+  schedule  Schedule?
+}
+
+model Timer {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime
+  on        Boolean
+  onSince   DateTime
+  Task      Task     @relation(fields: [taskId], references: [id])
+  taskId    Int      @unique
+}
+
+model Schedule {
+  id        Int     @id @default(autoincrement())
+  taskId    Int     @unique
+  task      Task    @relation(fields: [taskId], references: [id])
+  friday    Boolean @default(true)
+  sauterday Boolean @default(true)
+  sunday    Boolean @default(true)
+  monday    Boolean @default(true)
+  tuesday   Boolean @default(true)
+  wednesday Boolean @default(true)
+  thursday  Boolean @default(true)
+}
+
+enum Criteria {
+  Time
+  Count
+  Check
+}
+
+enum Frequency {
+  Onetime
+  Recurring
+}
