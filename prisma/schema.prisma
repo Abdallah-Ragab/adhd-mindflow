@@ -22,28 +22,41 @@ model User {
 }
 
 model Task {
+  id     Int       @id @default(autoincrement())
+  title  String
+  userId Int       @unique
+  user   User      @relation(fields: [userId], references: [id])
+  logs   TaskLog[]
+
+  criteria  Criteria
+  // Time Based
+  goalTime  DateTime?
+  // Count Based
+  goalCount Int?
+
+  frequency Frequency
+  // One time Task
+  dueDate   DateTime? @default(now())
+  // Recurring Task
+  schedule  Schedule?
+  startDate DateTime?
+  endDate   DateTime?
+  Timer     Timer?
+}
+
+model TaskLog {
   id        Int      @id @default(autoincrement())
-  title     String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  criteria Criteria
   // Time Based
-  goalTime DateTime?
-  timer    Timer?
+  time  DateTime?
   // Count Based
-  goalCount Int?
-  count    Int?
-  // Check Based
-  check    Boolean?
+  count Int
 
-  frequency Frequency
-  // Onetime
-  dueDate   DateTime? @default(now())
-  // Recurring
-  schedule  Schedule?
+  done Boolean
 }
 
 model Timer {
