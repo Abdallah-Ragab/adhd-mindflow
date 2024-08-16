@@ -30,7 +30,7 @@ model Task {
 
   criteria  Criteria
   // Time Based
-  goalTime  DateTime?
+  goalTime  Int?
   // Count Based
   goalCount Int?
 
