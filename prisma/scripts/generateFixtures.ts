@@ -1,9 +1,8 @@
-import { passwordExtension } from "../extensions/password";
-
 const { Schedule, Criteria, Frequency, PrismaClient } = require("@prisma/client");
 const faker = require('@faker-js/faker').faker;
+const bcrypt = require('bcrypt');
 
-const db = new PrismaClient().$extends(passwordExtension);
+const db = new PrismaClient()//.$extends(passwordExtension);
 const endOfToday = new Date()
 endOfToday.setHours(23, 59, 59, 999);
 
@@ -12,7 +11,7 @@ const generateUsers = (count: number, includeTasks: Boolean = true) => {
         return {
             email: faker.internet.email(),
             name: faker.person.fullName(),
-            password: faker.internet.password(),
+            password: bcrypt.hashSync(faker.internet.password(), 10),
             tasks: includeTasks ? {
                 create: generateTasks(faker.number.int({ min: 1, max: 10 })),
             } : undefined
@@ -72,7 +71,6 @@ const generateTasks = (count: number) => {
 
 async function main() {
     const users = generateUsers(1);
-    console.log(users)
     users.map(async (user) => {
         await db.user.create({ data: user })
     });
