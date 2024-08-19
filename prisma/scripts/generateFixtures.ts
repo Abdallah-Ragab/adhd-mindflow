@@ -6,17 +6,22 @@ const db = new PrismaClient()//.$extends(passwordExtension);
 const endOfToday = new Date()
 endOfToday.setHours(23, 59, 59, 999);
 
+const passwords: {email: string, password: string}[] = []
+
 const generateUsers = (count: number, includeTasks: Boolean = true) => {
-    return Array.from({ length: count }, () => {
+    return [Array.from({ length: count }, () => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        passwords.push({ email, password });
         return {
-            email: faker.internet.email(),
+            email: email,
             name: faker.person.fullName(),
-            password: bcrypt.hashSync(faker.internet.password(), 10),
+            password: bcrypt.hashSync(password, 10),
             tasks: includeTasks ? {
                 create: generateTasks(faker.number.int({ min: 1, max: 10 })),
             } : undefined
         };
-    });
+    }), passwords];
 };
 
 const generateTasks = (count: number) => {
@@ -70,10 +75,11 @@ const generateTasks = (count: number) => {
 
 
 async function main() {
-    const users = generateUsers(1);
+    const [users, passwords] = generateUsers(1);
     users.map(async (user) => {
         await db.user.create({ data: user })
     });
+    console.log(passwords)
 }
 
 main()
