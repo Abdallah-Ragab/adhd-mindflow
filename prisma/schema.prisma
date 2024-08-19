@@ -24,7 +24,7 @@ model User {
 model Task {
   id     Int       @id @default(autoincrement())
   title  String
-  userId Int       @unique
+  userId Int       
   user   User      @relation(fields: [userId], references: [id])
   logs   TaskLog[]
 
