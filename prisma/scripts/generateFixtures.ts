@@ -1,8 +1,9 @@
+import { passwordExtension } from "../extensions/password";
+
 const { Schedule, Criteria, Frequency, PrismaClient } = require("@prisma/client");
 const faker = require('@faker-js/faker').faker;
-// console.log(faker)
 
-const db = new PrismaClient();
+const db = new PrismaClient().$extends(passwordExtension);
 const endOfToday = new Date()
 endOfToday.setHours(23, 59, 59, 999);
 
