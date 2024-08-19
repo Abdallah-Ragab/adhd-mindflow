@@ -73,7 +73,7 @@ model Schedule {
   taskId    Int     @unique
   task      Task    @relation(fields: [taskId], references: [id])
   friday    Boolean @default(true)
-  sauterday Boolean @default(true)
+  saturday Boolean @default(true)
   sunday    Boolean @default(true)
   monday    Boolean @default(true)
   tuesday   Boolean @default(true)
