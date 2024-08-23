@@ -1,4 +1,4 @@
-import { encodeToken, getPayload } from "@/app/auth/jwt";
+import { encodeToken, getPayload } from "@/app/api/auth/lib/jwt";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, passwordExtension } from "@/prisma/extensions/password";
 import { NextApiRequest } from "next";
