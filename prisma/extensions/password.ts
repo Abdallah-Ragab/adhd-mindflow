@@ -2,6 +2,12 @@ import { Prisma } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { verify } from 'crypto'
 
+interface argsType {
+    data: {
+        password: string
+    }
+}
+
 // Define the extension
 const passwordExtension = Prisma.defineExtension({
     name: 'Password Encryption Extension',
@@ -20,11 +26,11 @@ const passwordExtension = Prisma.defineExtension({
     },
     query: {
         user: {
-            $allOperations({ model, operation, args, query }) {
+            $allOperations({ model, operation, args , query }) {
                 if (['create', 'update'].includes(operation)) {
                     if (args.hasOwnProperty('data')) {
-                        if (args.data.hasOwnProperty('password')) {
-                            args.data.password = hashPassword(args.data.password)
+                        if ((args as argsType).data.hasOwnProperty('password')) {
+                            (args as argsType).data.password = hashPassword((args as argsType).data.password)
                         }
                     }
                 }
