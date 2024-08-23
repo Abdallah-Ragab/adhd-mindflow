@@ -25,7 +25,7 @@ model Task {
   id     Int       @id @default(autoincrement())
   title  String
   userId Int       
-  user   User      @relation(fields: [userId], references: [id])
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   logs   TaskLog[]
 
   criteria  Criteria
@@ -45,7 +45,7 @@ model Task {
 
 model TaskLog {
   id        Int      @id @default(autoincrement())
-  task      Task     @relation(fields: [taskId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId    Int      
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,14 +64,14 @@ model Timer {
   onSince   DateTime
   elapsed   Int
   on        Boolean
-  log       TaskLog  @relation(fields: [logId], references: [id])
+  log       TaskLog  @relation(fields: [logId], references: [id], onDelete: Cascade)
   logId     Int      @unique
 }
 
 model Schedule {
   id        Int     @id @default(autoincrement())
   taskId    Int     @unique
-  task      Task    @relation(fields: [taskId], references: [id])
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   friday    Boolean @default(true)
   saturday Boolean @default(true)
   sunday    Boolean @default(true)
