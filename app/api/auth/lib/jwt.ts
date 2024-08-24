@@ -2,6 +2,8 @@ import { Secret, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextRequest } from 'next/server';
 
+const DEFAULT_IP = "::::";
+
 const AuthErrors = {
     InvalidToken: {
         message: "Invalid access token provided",
@@ -18,7 +20,8 @@ const AuthErrors = {
     GenericError: {
         message: "An error occurred while authenticating the request",
         code: "t4"
-    }
+    },
+
 }
 
 export const generateAccessToken = (userId: number, duration: string = '1h') => {
@@ -38,7 +41,7 @@ export const generateRefreshToken = async (user: User, request: NextRequest) => 
     )
 }
 
-export const getRefreshTokenExpiry = async (refreshToken: string) : Promise<number|null> => {
+export const getRefreshTokenExpiry = async (refreshToken: string): Promise<number | null> => {
     // @ts-ignore
     const [payload, ok] = await getPayload(refreshToken);
 
@@ -54,8 +57,10 @@ const getAccessToken = async (request: NextRequest) => {
     return await request.headers.get('Authorization')?.split(' ')[1] ?? await request.cookies.get('accesstoken')?.value;
 }
 
+
+
 const getIP = async (request: NextRequest) => {
-    return await request.ip || await request.headers.get('x-forwarded-for') || await request.headers.get('x-real-ip') || "::::";
+    return await request.ip || await request.headers.get('x-forwarded-for') || await request.headers.get('x-real-ip') || DEFAULT_IP;
 }
 
 const getPayload = async (token: string) => {
@@ -66,11 +71,14 @@ const getPayload = async (token: string) => {
 
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
-    return validateAccessToken(accessToken);
+    return await validateAccessToken(accessToken);
 }
-async function validateAccessToken (accessToken: string) {
+
+
+
+async function validateAccessToken(accessToken: string): Promise<{ userId: number | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
-    const [validation, ok] = await getPayload(accessToken); 
+    const [validation, ok] = await getPayload(accessToken);
 
     if (ok) {
         return {
@@ -99,3 +107,4 @@ async function validateAccessToken (accessToken: string) {
         }
     }
 }
+
