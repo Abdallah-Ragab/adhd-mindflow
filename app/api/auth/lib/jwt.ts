@@ -1,9 +1,11 @@
 import { Secret, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextRequest } from 'next/server';
-
+import { parseServerError } from "@/app/api/lib/helpers";
+import { PrismaClient } from "@prisma/client";
 
 const DEFAULT_IP = "::::";
+const db = new PrismaClient()
 
 const AuthErrors = {
     GenericError: {
@@ -26,7 +28,10 @@ const AuthErrors = {
         message: "Unauthorized usage of token",
         code: "104"
     },
-
+    UserDoesNotExist: {
+        message: "User does not exist",
+        code: "105"
+    },
 }
 
 export const generateAccessToken = (userId: number, duration: string = '1h') => {
@@ -99,7 +104,12 @@ const getPayload = async (token: string) => {
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
     const validation = await validateAccessToken(accessToken);
-
+    if (!isUserActive(validation.userId as number)) {
+        return {
+            userId: validation.userId,
+            error: AuthErrors.UserDoesNotExist
+        }
+    }
     return validation;
 }
 
@@ -121,8 +131,12 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
                 }
             }
         }
-
-
+        if (!isUserActive(validation.userId as number)) {
+            return {
+                userId: validation.userId,
+                error: AuthErrors.UserDoesNotExist
+            }
+        }
     }
 
     return validation;
@@ -179,5 +193,18 @@ const parseAuthError = function (payload: VerifyErrors|any) {
         expiresAt: null,
         ip: null,
         error: authError
+    }
+}
+
+export async function isUserActive(userId: number): Promise<boolean | Object> {
+    try {
+        const revoked = await db.revokedToken.findFirst({
+            where: {
+                userId: userId
+            }
+        })
+        return revoked ? true : false;
+    } catch (error) {
+        return parseServerError(error)
     }
 }
