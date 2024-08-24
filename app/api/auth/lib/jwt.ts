@@ -5,25 +5,25 @@ import { NextRequest } from 'next/server';
 const DEFAULT_IP = "::::";
 
 const AuthErrors = {
-    InvalidToken: {
-        message: "Invalid access token provided",
-        code: "t1"
-    },
-    ExpiredToken: {
-        message: "Provided access token has expired",
-        code: "t2"
-    },
-    MissingToken: {
-        message: "No access token provided",
-        code: "t3"
-    },
     GenericError: {
         message: "An error occurred while authenticating the request",
-        code: "t4"
+        code: "100"
+    },
+    InvalidToken: {
+        message: "Invalid token provided",
+        code: "101"
+    },
+    ExpiredToken: {
+        message: "Provided token has expired",
+        code: "102"
+    },
+    MissingToken: {
+        message: "No token provided",
+        code: "103"
     },
     Unauthorized: {
-        message: "Unauthorized access",
-        code: "t5"
+        message: "Unauthorized usage of token",
+        code: "104"
     },
 }
 
