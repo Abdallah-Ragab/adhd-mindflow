@@ -104,7 +104,9 @@ const getPayload = async (token: string) => {
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
     const validation = await validateAccessToken(accessToken);
-    if (!isUserActive(validation.userId as number)) {
+    const userExists = await isUserActive(validation.userId as number);
+    
+    if (!validation.error && !userExists) {
         return {
             userId: validation.userId,
             error: AuthErrors.UserDoesNotExist
