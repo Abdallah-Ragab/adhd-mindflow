@@ -196,6 +196,42 @@ const parseAuthError = function (payload: VerifyErrors|any) {
     }
 }
 
+export async function revokeRefreshToken(refreshToken: string): Promise<boolean | Object> {
+    try {
+        // @ts-ignore
+        const [payload, ok] = await getPayload(refreshToken);
+        const signature = refreshToken.split('.')[2];
+
+        if (ok) {
+            const userID = payload.sub;
+            db.revokedToken.create({
+                data: {
+                    signature: signature,
+                    userId: userID
+                }
+            })
+            return true;
+        }
+        return parseAuthError(payload);
+    } catch (error) {
+        return parseServerError(error)
+    }
+}
+
+export async function isRefreshTokenRevoked(refreshToken: string): Promise<boolean | Object> {
+    try {
+        const signature = refreshToken.split('.')[2];
+        const revoked = await db.revokedToken.findFirst({
+            where: {
+                signature: signature
+            }
+        })
+        return revoked ? true : false;
+    } catch (error) {
+        return parseServerError(error)
+    }
+}
+
 export async function isUserActive(userId: number): Promise<boolean | Object> {
     try {
         const revoked = await db.revokedToken.findFirst({
