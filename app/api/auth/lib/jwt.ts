@@ -2,6 +2,7 @@ import { Secret, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextRequest } from 'next/server';
 
+
 const DEFAULT_IP = "::::";
 
 const AuthErrors = {
@@ -25,6 +26,7 @@ const AuthErrors = {
         message: "Unauthorized usage of token",
         code: "104"
     },
+
 }
 
 export const generateAccessToken = (userId: number, duration: string = '1h') => {
@@ -96,7 +98,9 @@ const getPayload = async (token: string) => {
 
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
-    return await validateAccessToken(accessToken);
+    const validation = await validateAccessToken(accessToken);
+
+    return validation;
 }
 
 export const AuthorizeRefreshToken = async (request: NextRequest) => {
@@ -118,6 +122,7 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
             }
         }
 
+
     }
 
     return validation;
@@ -125,60 +130,44 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
 
 async function validateAccessToken(accessToken: string): Promise<{ userId: number | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
-    const [validation, ok] = await getPayload(accessToken);
+    const [payload, ok] = await getPayload(accessToken);
 
     if (ok) {
         return {
-            userId: validation?.sub,
-            expiresAt: validation?.exp,
+            userId: payload?.sub,
+            expiresAt: payload?.exp,
             error: false
         }
     }
     else {
-        let authData = AuthErrors.GenericError;
-        if (validation.name === 'TokenExpiredError') {
-            authData = AuthErrors.ExpiredToken
-        }
-        else if (validation.name === 'JsonWebTokenError') {
-            if (validation.message === 'jwt must be provided') {
-                authData = AuthErrors.MissingToken
-            }
-            else {
-                authData = AuthErrors.InvalidToken
-            }
-        }
-        return {
-            userId: null,
-            expiresAt: null,
-            error: authData
-        }
+        return parseAuthError(payload)
     }
 }
 
 async function validateRefreshToken(refreshToken: string): Promise<{ userId: number | null, ip: string | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
-    const [validation, ok] = await getPayload(refreshToken);
+    const [payload, ok] = await getPayload(refreshToken);
 
     if (ok) {
         return {
-            userId: validation?.sub,
-            ip: validation?.ip,
-            expiresAt: validation?.exp,
+            userId: payload?.sub,
+            ip: payload?.ip,
+            expiresAt: payload?.exp,
             error: false
         }
     }
     else {
-        return parseAuthError(validation);
+        return parseAuthError(payload);
     }
 }
 
-const parseAuthError = function (validation: VerifyErrors|any) {
+const parseAuthError = function (payload: VerifyErrors|any) {
     let authError = AuthErrors.GenericError;
-    if (validation.name === 'TokenExpiredError') {
+    if (payload.name === 'TokenExpiredError') {
         authError = AuthErrors.ExpiredToken
     }
-    else if (validation.name === 'JsonWebTokenError') {
-        if (validation.message === 'jwt must be provided') {
+    else if (payload.name === 'JsonWebTokenError') {
+        if (payload.message === 'jwt must be provided') {
             authError = AuthErrors.MissingToken
         }
         else {
