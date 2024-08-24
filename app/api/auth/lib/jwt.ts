@@ -198,7 +198,7 @@ const parseAuthError = function (payload: VerifyErrors|any) {
     }
 }
 
-export async function revokeRefreshToken(refreshToken: string): Promise<boolean | Object> {
+export async function revokeRefreshToken(refreshToken: string): Promise<{error:any}> {
     try {
         // @ts-ignore
         const [payload, ok] = await getPayload(refreshToken);
@@ -206,17 +206,20 @@ export async function revokeRefreshToken(refreshToken: string): Promise<boolean 
 
         if (ok) {
             const userID = payload.sub;
-            db.revokedToken.create({
+            await db.revokedToken.create({
                 data: {
                     signature: signature,
                     userId: userID
                 }
-            })
-            return true;
+            });
+            return {
+                error: false
+            };
+        } else {
+            return parseAuthError(payload);
         }
-        return parseAuthError(payload);
     } catch (error) {
-        return parseServerError(error)
+        return parseServerError(error);
     }
 }
 
