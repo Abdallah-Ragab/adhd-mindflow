@@ -131,7 +131,7 @@ async function validateAccessToken(accessToken: string): Promise<{ userId: numbe
         }
     }
     else {
-        return parseAuthError(payload)
+        return parseJWTError(payload)
     }
 }
 
@@ -148,11 +148,11 @@ async function validateRefreshToken(refreshToken: string): Promise<{ userId: num
         }
     }
     else {
-        return parseAuthError(payload);
+        return parseJWTError(payload);
     }
 }
 
-const parseAuthError = function (payload: VerifyErrors|any) {
+const parseJWTError = function (payload: VerifyErrors|any) {
     let authError = errors.auth.GenericError;
     if (payload.name === 'TokenExpiredError') {
         authError = errors.auth.ExpiredToken
@@ -191,7 +191,7 @@ export async function revokeRefreshToken(refreshToken: string): Promise<{error:a
                 error: false
             };
         } else {
-            return parseAuthError(payload);
+            return parseJWTError(payload);
         }
     } catch (error) {
         return parseServerError(error);
