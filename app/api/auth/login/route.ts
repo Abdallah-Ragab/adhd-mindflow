@@ -4,6 +4,7 @@ import { passwordExtension } from "@/prisma/extensions/password";
 import { NextRequest, NextResponse } from "next/server";
 
 const db = new PrismaClient().$extends(passwordExtension);
+const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
 
 export async function POST(request: NextRequest) {
     try {
@@ -57,10 +58,14 @@ export async function POST(request: NextRequest) {
 
             return response;
         }
-    } catch (PrismaClientInitializationError) {
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error(err);
+        }
         return NextResponse.json({
             error: {
-                message: 'Server error: Unable to initialize database connection',
+                message: 'Internal server error',
+                ...(DEBUG ? { details: `${err.prototype.name}: ${err.message}` } : {}),
             }
         }, { status: 500 });
     }
