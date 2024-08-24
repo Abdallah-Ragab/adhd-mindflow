@@ -44,11 +44,16 @@ export async function POST(request: NextRequest) {
     }
     else {
         const accessToken = generateAccessToken(user.id);
+        const refreshToken = await generateRefreshToken(user, request);
+        const refreshTokenExpiry = await getRefreshTokenExpiry(refreshToken) as number * 1000;
         const response = NextResponse.json({
             accesstoken: accessToken,
+            refreshtoken: refreshToken,
         }, { status: 200 })
 
         response.cookies.set('accesstoken', accessToken, { httpOnly: false, path: '/', sameSite: 'strict', });
+        response.cookies.set('refreshtoken', refreshToken, { httpOnly: true, path: '/', sameSite: 'strict', expires: refreshTokenExpiry as number });;
+
         return response;
     }
 }
