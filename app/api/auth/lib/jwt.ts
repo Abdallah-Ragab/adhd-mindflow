@@ -72,7 +72,7 @@ const getAccessToken = async (request: NextRequest) => {
     }
 }
 
-const getRefreshToken = async (request: NextRequest) => {
+export const getRefreshToken = async (request: NextRequest) => {
     try {
         const body = await request.json() as { refreshtoken: string } | null;
         if (!body?.refreshtoken) { throw new Error('No refresh token provided') }
@@ -168,23 +168,27 @@ async function validateRefreshToken(refreshToken: string): Promise<{ userId: num
         }
     }
     else {
-        let authError = AuthErrors.GenericError;
-        if (validation.name === 'TokenExpiredError') {
-            authError = AuthErrors.ExpiredToken
+        return parseAuthError(validation);
+    }
+}
+
+const parseAuthError = function (validation: VerifyErrors|any) {
+    let authError = AuthErrors.GenericError;
+    if (validation.name === 'TokenExpiredError') {
+        authError = AuthErrors.ExpiredToken
+    }
+    else if (validation.name === 'JsonWebTokenError') {
+        if (validation.message === 'jwt must be provided') {
+            authError = AuthErrors.MissingToken
         }
-        else if (validation.name === 'JsonWebTokenError') {
-            if (validation.message === 'jwt must be provided') {
-                authError = AuthErrors.MissingToken
-            }
-            else {
-                authError = AuthErrors.InvalidToken
-            }
+        else {
+            authError = AuthErrors.InvalidToken
         }
-        return {
-            userId: null,
-            expiresAt: null,
-            ip: null,
-            error: authError
-        }
+    }
+    return {
+        userId: null,
+        expiresAt: null,
+        ip: null,
+        error: authError
     }
 }
