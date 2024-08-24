@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { passwordExtension } from "@/prisma/extensions/password";
 import { AuthenticateRequest, generateAccessToken, generateRefreshToken } from "../auth/lib/jwt";
 import { NextResponse, NextRequest } from "next/server";
+import { parseServerError } from "../lib/helpers";
 
 const db = new PrismaClient().$extends(passwordExtension);
 
@@ -26,6 +27,10 @@ export async function GET(request: NextRequest) {
       }, { status: 200 });
 
     }
+  } catch (err: Error | any) {
+    return NextResponse.json({
+      ...parseServerError(err)
+    }, { status: 500 });
   } finally {
     await db.$disconnect();
   }
