@@ -117,6 +117,8 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
         }
 
     }
+
+    return validation;
 }
 
 async function validateAccessToken(accessToken: string): Promise<{ userId: number | null, expiresAt: number | null, error: Object | boolean }> {
