@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     else {
       const data = await db.task.findMany({
         where: {
-          userId: authentication.userId,
+          userId: authentication.userId as number,
         },
       });
 
