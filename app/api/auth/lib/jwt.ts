@@ -3,36 +3,11 @@ import { User } from '@prisma/client';
 import { NextRequest } from 'next/server';
 import { parseServerError } from "@/app/api/lib/helpers";
 import { PrismaClient } from "@prisma/client";
+import errors from '@/app/api/lib/error/codes'
 
 const DEFAULT_IP = "::::";
 const db = new PrismaClient()
 
-const AuthErrors = {
-    GenericError: {
-        message: "An error occurred while authenticating the request",
-        code: "100"
-    },
-    InvalidToken: {
-        message: "Invalid token provided",
-        code: "101"
-    },
-    ExpiredToken: {
-        message: "Provided token has expired",
-        code: "102"
-    },
-    MissingToken: {
-        message: "No token provided",
-        code: "103"
-    },
-    Unauthorized: {
-        message: "Unauthorized usage of token",
-        code: "104"
-    },
-    UserDoesNotExist: {
-        message: "User does not exist",
-        code: "105"
-    },
-}
 
 export const generateAccessToken = (userId: number, duration: string = '1h') => {
     return sign(
@@ -109,7 +84,7 @@ export const AuthenticateRequest = async (request: NextRequest) => {
     if (!validation.error && !userExists) {
         return {
             userId: validation.userId,
-            error: AuthErrors.UserDoesNotExist
+            error: errors.auth.UserDoesNotExist
         }
     }
     return validation;
@@ -129,14 +104,14 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
                     userId: null,
                     ip: null,
                     expiresAt: null,
-                    error: AuthErrors.Unauthorized
+                    error: errors.auth.Unauthorized
                 }
             }
         }
         if (!isUserActive(validation.userId as number)) {
             return {
                 userId: validation.userId,
-                error: AuthErrors.UserDoesNotExist
+                error: errors.auth.UserDoesNotExist
             }
         }
     }
@@ -178,16 +153,16 @@ async function validateRefreshToken(refreshToken: string): Promise<{ userId: num
 }
 
 const parseAuthError = function (payload: VerifyErrors|any) {
-    let authError = AuthErrors.GenericError;
+    let authError = errors.auth.GenericError;
     if (payload.name === 'TokenExpiredError') {
-        authError = AuthErrors.ExpiredToken
+        authError = errors.auth.ExpiredToken
     }
     else if (payload.name === 'JsonWebTokenError') {
         if (payload.message === 'jwt must be provided') {
-            authError = AuthErrors.MissingToken
+            authError = errors.auth.MissingToken
         }
         else {
-            authError = AuthErrors.InvalidToken
+            authError = errors.auth.InvalidToken
         }
     }
     return {
