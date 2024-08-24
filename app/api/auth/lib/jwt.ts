@@ -38,6 +38,18 @@ export const generateRefreshToken = async (user: User, request: NextRequest) => 
     )
 }
 
+export const getRefreshTokenExpiry = async (refreshToken: string) : Promise<number|null> => {
+    // @ts-ignore
+    const [payload, ok] = await getPayload(refreshToken);
+
+    if (ok) {
+        return payload.exp;
+    }
+    else {
+        return null;
+    }
+}
+
 const getAccessToken = async (request: NextRequest) => {
     return await request.headers.get('Authorization')?.split(' ')[1] ?? await request.cookies.get('accesstoken')?.value;
 }
