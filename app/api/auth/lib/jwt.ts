@@ -55,7 +55,7 @@ const getAccessToken = async (request: NextRequest) => {
 }
 
 const getIP = async (request: NextRequest) => {
-    return await request.ip || await request.headers.get('x-forwarded-for');
+    return await request.ip || await request.headers.get('x-forwarded-for') || await request.headers.get('x-real-ip') || "::::";
 }
 
 const getPayload = async (token: string) => {
