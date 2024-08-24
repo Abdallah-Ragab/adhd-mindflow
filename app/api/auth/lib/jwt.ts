@@ -21,7 +21,10 @@ const AuthErrors = {
         message: "An error occurred while authenticating the request",
         code: "t4"
     },
-
+    Unauthorized: {
+        message: "Unauthorized access",
+        code: "t5"
+    },
 }
 
 export const generateAccessToken = (userId: number, duration: string = '1h') => {
@@ -57,7 +60,9 @@ const getAccessToken = async (request: NextRequest) => {
     return await request.headers.get('Authorization')?.split(' ')[1] ?? await request.cookies.get('accesstoken')?.value;
 }
 
-
+const getRefreshToken = async (request: NextRequest) => {
+    return (await (request.json() as Promise<{ refreshtoken: string; } | null>))?.refreshtoken ?? await request.cookies.get('refreshtoken')?.value ?? null;
+}
 
 const getIP = async (request: NextRequest) => {
     return await request.ip || await request.headers.get('x-forwarded-for') || await request.headers.get('x-real-ip') || DEFAULT_IP;
@@ -74,7 +79,27 @@ export const AuthenticateRequest = async (request: NextRequest) => {
     return await validateAccessToken(accessToken);
 }
 
+export const AuthorizeRefreshToken = async (request: NextRequest) => {
+    const refreshToken = await getRefreshToken(request) ?? '';
+    const validation = await validateRefreshToken(refreshToken);
+    if (!validation.error) {
+        if (validation.ip && validation.ip !== DEFAULT_IP) {
+            const IPMatch = (await getIP(request)) === validation.ip;
+            if (IPMatch) {
+                return validation;
+            }
+            else {
+                return {
+                    userId: null,
+                    ip: null,
+                    expiresAt: null,
+                    error: AuthErrors.InvalidToken
+                }
+            }
+        }
 
+    }
+}
 
 async function validateAccessToken(accessToken: string): Promise<{ userId: number | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
@@ -108,3 +133,36 @@ async function validateAccessToken(accessToken: string): Promise<{ userId: numbe
     }
 }
 
+async function validateRefreshToken(refreshToken: string): Promise<{ userId: number | null, ip: string | null, expiresAt: number | null, error: Object | boolean }> {
+    // @ts-ignore
+    const [validation, ok] = await getPayload(refreshToken);
+
+    if (ok) {
+        return {
+            userId: validation?.sub,
+            ip: validation?.ip,
+            expiresAt: validation?.exp,
+            error: false
+        }
+    }
+    else {
+        let authError = AuthErrors.GenericError;
+        if (validation.name === 'TokenExpiredError') {
+            authError = AuthErrors.ExpiredToken
+        }
+        else if (validation.name === 'JsonWebTokenError') {
+            if (validation.message === 'jwt must be provided') {
+                authError = AuthErrors.MissingToken
+            }
+            else {
+                authError = AuthErrors.InvalidToken
+            }
+        }
+        return {
+            userId: null,
+            expiresAt: null,
+            ip: null,
+            error: authError
+        }
+    }
+}
