@@ -57,11 +57,29 @@ export const getRefreshTokenExpiry = async (refreshToken: string): Promise<numbe
 }
 
 const getAccessToken = async (request: NextRequest) => {
-    return await request.headers.get('Authorization')?.split(' ')[1] ?? await request.cookies.get('accesstoken')?.value;
+    try {
+        const authorizationHeader = request.headers.get('Authorization');
+        if (authorizationHeader) {
+            const accessToken = authorizationHeader.split(' ')[1];
+            return accessToken;
+        } else {
+            const cookie = await request.cookies.get('accesstoken');
+            return cookie?.value ?? null;
+        }
+    } catch (error) {
+        // Handle error when body is empty or not in JSON format
+        return null;
+    }
 }
 
 const getRefreshToken = async (request: NextRequest) => {
-    return (await (request.json() as Promise<{ refreshtoken: string; } | null>))?.refreshtoken ?? await request.cookies.get('refreshtoken')?.value ?? null;
+    try {
+        const body = await request.json() as { refreshtoken: string } | null;
+        return body?.refreshtoken ?? await request.cookies.get('refreshtoken')?.value ?? null;
+    } catch (error) {
+        // Handle error when body is empty or not in JSON format
+        return null;
+    }
 }
 
 const getIP = async (request: NextRequest) => {
@@ -93,7 +111,7 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
                     userId: null,
                     ip: null,
                     expiresAt: null,
-                    error: AuthErrors.InvalidToken
+                    error: AuthErrors.Unauthorized
                 }
             }
         }
