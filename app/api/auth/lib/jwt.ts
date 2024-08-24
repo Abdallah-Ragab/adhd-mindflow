@@ -75,10 +75,12 @@ const getAccessToken = async (request: NextRequest) => {
 const getRefreshToken = async (request: NextRequest) => {
     try {
         const body = await request.json() as { refreshtoken: string } | null;
-        return body?.refreshtoken ?? await request.cookies.get('refreshtoken')?.value ?? null;
+        if (!body?.refreshtoken) { throw new Error('No refresh token provided') }
+        else {
+            return body?.refreshtoken
+        }
     } catch (error) {
-        // Handle error when body is empty or not in JSON format
-        return null;
+        return await request.cookies.get('refreshtoken')?.value ?? null;
     }
 }
 
