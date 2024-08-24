@@ -54,6 +54,7 @@ const getPayload = async (token: string) => {
 
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request);
+    // @ts-ignore
     const [validation, ok] = await getPayload(accessToken); 
 
     if (ok) {
