@@ -14,11 +14,11 @@ datasource db {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  name         String?
-  password     String?
-  tasks        Task[]
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String?
+  password      String?
+  tasks         Task[]
   revokedTokens revokedToken[]
 }
 
@@ -83,7 +83,7 @@ model Schedule {
 }
 
 model revokedToken {
-  signiture String @id
+  signature String @id
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 }
