@@ -2,6 +2,7 @@ import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from
 import { PrismaClient } from "@prisma/client";
 import { passwordExtension } from "@/prisma/extensions/password";
 import { NextRequest, NextResponse } from "next/server";
+import { parseServerError } from "@/app/api/lib/helpers";
 
 const db = new PrismaClient().$extends(passwordExtension);
 const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
@@ -63,10 +64,7 @@ export async function POST(request: NextRequest) {
             console.error(err);
         }
         return NextResponse.json({
-            error: {
-                message: 'Internal server error',
-                ...(DEBUG ? { details: `${err.prototype.name}: ${err.message}` } : {}),
-            }
+            ...parseServerError(err)
         }, { status: 500 });
     }
     finally {
