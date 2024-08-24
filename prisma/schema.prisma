@@ -14,17 +14,18 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String?
-  tasks    Task[]
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  name         String?
+  password     String?
+  tasks        Task[]
+  revokedTokens revokedToken[]
 }
 
 model Task {
   id     Int       @id @default(autoincrement())
   title  String
-  userId Int       
+  userId Int
   user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   logs   TaskLog[]
 
@@ -46,7 +47,7 @@ model Task {
 model TaskLog {
   id        Int      @id @default(autoincrement())
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId    Int      
+  taskId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -73,12 +74,18 @@ model Schedule {
   taskId    Int     @unique
   task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   friday    Boolean @default(true)
-  saturday Boolean @default(true)
+  saturday  Boolean @default(true)
   sunday    Boolean @default(true)
   monday    Boolean @default(true)
   tuesday   Boolean @default(true)
   wednesday Boolean @default(true)
   thursday  Boolean @default(true)
+}
+
+model revokedToken {
+  signiture String @id
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
 }
 
 enum Criteria {
