@@ -2,20 +2,22 @@ import { generateAccessToken } from "@/app/api/auth/lib/jwt";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, passwordExtension } from "@/prisma/extensions/password";
 import { NextApiRequest } from "next";
-import { hash } from "crypto";
 
 const db = new PrismaClient().$extends(passwordExtension);
 
 export async function POST(request: NextApiRequest) {
     // @ts-ignore
     const data = await request.json()
-    if (!data) {
+    const email = data?.email;
+    const password = data?.password;
+
+    if (!email || !password) {
         return Response.json({
-            message: 'Invalid request',
-        });
+            error: {
+                message: 'Invalid request: Please provide a valid email and password',
+            }
+        }, { status: 400 });
     }
-    const email = data.email;
-    const password = data.password;
 
     const user = await db.user.findUnique({
         where: {
@@ -25,25 +27,26 @@ export async function POST(request: NextApiRequest) {
 
     if (!user) {
         return Response.json({
-            message: 'User not found',
-        });
+            error: {
+                message: 'Unauthorized: Email does not exist',
+            }
+        }, { status: 401 });
     }
 
-    const match = user.verifyPassword(password);
-    if (!match) {
+    const passwordsMatch = user.verifyPassword(password);
+
+    if (!passwordsMatch) {
         return Response.json({
-            message: 'Invalid password',
-            input: hashPassword(password),
-            password: user.password,
-        });
+            error: {
+                message: 'Unauthorized: Invalid password',
+            }
+        }, { status: 401 });
     }
     else {
         const token = generateAccessToken(user.id);
         const response = Response.json({
-            message: 'Success',
-            token,
-        });
-        response.headers.set('set-cookie', `accesstoken=${token}; Path=/; SameSite=Strict;`);
+            accesstoken: token,
+        }, { status: 200, headers: { 'set-cookie': `accesstoken=${token}; Path=/; SameSite=Strict;` } });
         return response;
     }
 }
