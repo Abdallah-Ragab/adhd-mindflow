@@ -1,4 +1,4 @@
-import { encodeToken, getPayload } from "@/app/api/auth/lib/jwt";
+import { generateAccessToken } from "@/app/api/auth/lib/jwt";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, passwordExtension } from "@/prisma/extensions/password";
 import { NextApiRequest } from "next";
@@ -7,7 +7,7 @@ import { hash } from "crypto";
 const db = new PrismaClient().$extends(passwordExtension);
 
 export async function POST(request: NextApiRequest) {
-
+    // @ts-ignore
     const data = await request.json()
     if (!data) {
         return Response.json({
@@ -38,11 +38,12 @@ export async function POST(request: NextApiRequest) {
         });
     }
     else {
-        const token = encodeToken(user);
-        return Response.json({
+        const token = generateAccessToken(user.id);
+        const response = Response.json({
             message: 'Success',
             token,
-
         });
+        response.headers.set('set-cookie', `accesstoken=${token}; Path=/; SameSite=Strict;`);
+        return response;
     }
 }
