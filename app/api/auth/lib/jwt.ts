@@ -188,12 +188,20 @@ export async function revokeRefreshToken(refreshToken: string): Promise<{ error:
 
         if (ok) {
             const userID = payload.sub;
-            await db.revokedToken.create({
-                data: {
+            const alreadyProvoked = await db.revokedToken.findUnique({
+                where: {
                     signature: signature,
                     userId: userID
                 }
-            });
+            })
+            if (!alreadyProvoked) {
+                await db.revokedToken.create({
+                    data: {
+                        signature: signature,
+                        userId: userID
+                    }
+                });
+            }
             return {
                 error: false
             };
