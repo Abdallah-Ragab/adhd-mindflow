@@ -65,7 +65,7 @@ export const getRefreshToken = async (request: NextRequest) => {
         else {
             return body?.refreshtoken
         }
-    } catch (err: Error | any ) {
+    } catch (err: Error | any) {
         if (DEBUG) {
             console.error("Caught Error: " + err.message);
         }
@@ -86,14 +86,15 @@ const getPayload = async (token: string) => {
 export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
     const validation = await validateAccessToken(accessToken);
-    const userExists = await isUserActive(validation.userId as number);
+    const userExists = await checkUserExistence(validation.userId as number);
 
-    if (!validation.error && !userExists) {
-        return {
-            userId: validation.userId,
-            error: errors.auth.UserDoesNotExist
-        }
+    if (userExists.error) return userExists
+
+    if (!userExists) return {
+        userId: validation.userId,
+        error: errors.auth.UserDoesNotExist
     }
+
     return validation;
 }
 
@@ -115,11 +116,12 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
                 }
             }
         }
-        if (!isUserActive(validation.userId as number)) {
-            return {
-                userId: validation.userId,
-                error: errors.auth.UserDoesNotExist
-            }
+        const userExists = await checkUserExistence(validation.userId as number)
+        if (userExists.error) return userExists
+
+        if (!userExists) return {
+            userId: validation.userId,
+            error: errors.auth.UserDoesNotExist
         }
     }
 
@@ -188,11 +190,13 @@ export async function revokeRefreshToken(refreshToken: string): Promise<{ error:
 
         if (ok) {
             const userID = payload.sub;
-            if (!isUserActive(userID)) {
-                return {
-                    error: errors.auth.UserDoesNotExist
-                }
+            const userExists = await checkUserExistence(userID)
+
+            if (userExists.error) return userExists
+            if (!userExists) return {
+                error: errors.auth.UserDoesNotExist
             }
+            
             const alreadyProvoked = await db.revokedToken.findUnique({
                 where: {
                     signature: signature,
@@ -239,14 +243,14 @@ export async function isRefreshTokenRevoked(refreshToken: string): Promise<boole
     }
 }
 
-export async function isUserActive(userId: number): Promise<boolean | Object> {
+export async function checkUserExistence(userId: number): Promise<{ error: any, exist?: boolean }> {
     try {
-        const revoked = await db.revokedToken.findFirst({
+        const user = await db.user.findUnique({
             where: {
-                userId: userId
+                id: userId
             }
         })
-        return revoked ? true : false;
+        return { exist: user ? true : false, error: null };
     } catch (err: Error | any) {
         if (DEBUG) {
             console.error("Caught Error: " + err.message);
