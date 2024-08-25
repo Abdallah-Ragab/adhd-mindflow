@@ -1,8 +1,9 @@
-import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from "@/app/api/auth/lib/jwt";
 import { PrismaClient } from "@prisma/client";
 import { passwordExtension } from "@/prisma/extensions/password";
 import { NextRequest, NextResponse } from "next/server";
-import { parseServerError } from "@/app/api/lib/helpers";
+import { parseServerError } from "@/app/api/lib/error";
+import { generateAccessToken, generateRefreshToken } from "@/app/api/lib/auth";
+import { getTokenExp } from "@/app/api/lib/jwt";
 
 const db = new PrismaClient().$extends(passwordExtension);
 const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
         else {
             const accessToken = generateAccessToken(user.id, "10s");
             const refreshToken = await generateRefreshToken(user, request);
-            const refreshTokenExpiry = await getRefreshTokenExpiry(refreshToken) as number * 1000;
+            const refreshTokenExpiry = await getTokenExp(refreshToken) as number * 1000;
             const response = NextResponse.json({
                 accesstoken: accessToken,
                 refreshtoken: refreshToken,

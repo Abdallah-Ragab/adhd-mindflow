@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { passwordExtension } from "@/prisma/extensions/password";
-import { AuthenticateRequest, generateAccessToken, generateRefreshToken } from "../auth/lib/jwt";
 import { NextResponse, NextRequest } from "next/server";
-import { parseServerError } from "../lib/helpers";
+import { parseServerError } from "@/app/api/lib/error";
+import { AuthenticateRequest } from "@/app/api/lib/auth";
 
 const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
 const db = new PrismaClient().$extends(passwordExtension);
