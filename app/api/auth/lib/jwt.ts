@@ -126,6 +126,98 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
     return validation;
 }
 
+
+/**
+ * Revokes a refresh token by adding it's signature to db record
+ * @param {string} refreshToken - The refresh token to revoke.
+ * @returns {Promise<{ error: any }>} A promise that resolves with an error object if an error occurs.
+ */
+export const revokeRefreshToken = async (refreshToken: string): Promise<{ error: any }> => {
+    try {
+        // @ts-ignore
+        const decodedToken = await decodeToken(refreshToken) as { error: any, payload }; const signature = refreshToken.split('.')[2];
+
+        if (!decodedToken.error) {
+            const userID = decodedToken.payload?.sub;
+            const userExists = await checkUserExistence(userID)
+
+            if (userExists.error) return userExists
+            if (!userExists) return {
+                error: errors.auth.UserDoesNotExist
+            }
+
+            const alreadyProvoked = await db.revokedToken.findUnique({
+                where: {
+                    signature: signature,
+                    userId: userID
+                }
+            })
+            if (!alreadyProvoked) {
+                await db.revokedToken.create({
+                    data: {
+                        signature: signature,
+                        userId: userID
+                    }
+                });
+            }
+            return {
+                error: false
+            };
+        } else {
+            console.log(decodedToken.payload)
+            return parseJWTError(decodedToken.error);
+        }
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err);
+    }
+}
+
+/**
+ * Checks if a refresh token is revoked by querying the database for the token's signature.
+ * @param {string} refreshToken - The refresh token to check for revocation.
+ * @returns {Promise<boolean | Object>} A promise that resolves to a boolean indicating if the refresh token is revoked or an error object.
+ */
+export const isRefreshTokenRevoked = async (refreshToken: string): Promise<boolean | Object> => {
+    try {
+        const signature = refreshToken.split('.')[2];
+        const revoked = await db.revokedToken.findFirst({
+            where: {
+                signature: signature
+            }
+        })
+        return revoked ? true : false;
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err)
+    }
+}
+
+/**
+ * Checks if a user with the given userId exists in the database.
+ * @param {number} userId - The id of the user to check existence for.
+ * @returns {Promise<{ error: any, exist?: boolean }>} A promise that resolves to an object
+ * containing an error (if any) and a boolean indicating if the user exists.
+ */
+export const checkUserExistence = async (userId: number): Promise<{ error: any, exist?: boolean }> => {
+    try {
+        const user = await db.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+        return { exist: user ? true : false, error: null };
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err)
+    }
+}
 /**
  * Retrieves the access token from the request object.
  * @param {NextRequest} request - The Next.js request object.
@@ -233,97 +325,5 @@ const parseJWTError = (payload: VerifyErrors | any) => {
         expiresAt: null,
         ip: null,
         error: authError
-    }
-}
-
-/**
- * Revokes a refresh token by adding it's signature to db record
- * @param {string} refreshToken - The refresh token to revoke.
- * @returns {Promise<{ error: any }>} A promise that resolves with an error object if an error occurs.
- */
-export const revokeRefreshToken = async (refreshToken: string): Promise<{ error: any }> => {
-    try {
-        // @ts-ignore
-        const decodedToken = await decodeToken(refreshToken) as { error: any, payload }; const signature = refreshToken.split('.')[2];
-
-        if (!decodedToken.error) {
-            const userID = decodedToken.payload?.sub;
-            const userExists = await checkUserExistence(userID)
-
-            if (userExists.error) return userExists
-            if (!userExists) return {
-                error: errors.auth.UserDoesNotExist
-            }
-
-            const alreadyProvoked = await db.revokedToken.findUnique({
-                where: {
-                    signature: signature,
-                    userId: userID
-                }
-            })
-            if (!alreadyProvoked) {
-                await db.revokedToken.create({
-                    data: {
-                        signature: signature,
-                        userId: userID
-                    }
-                });
-            }
-            return {
-                error: false
-            };
-        } else {
-            console.log(decodedToken.payload)
-            return parseJWTError(decodedToken.error);
-        }
-    } catch (err: Error | any) {
-        if (DEBUG) {
-            console.error("Caught Error: " + err.message);
-        }
-        return parseServerError(err);
-    }
-}
-
-/**
- * Checks if a refresh token is revoked by querying the database for the token's signature.
- * @param {string} refreshToken - The refresh token to check for revocation.
- * @returns {Promise<boolean | Object>} A promise that resolves to a boolean indicating if the refresh token is revoked or an error object.
- */
-export const isRefreshTokenRevoked = async (refreshToken: string): Promise<boolean | Object> => {
-    try {
-        const signature = refreshToken.split('.')[2];
-        const revoked = await db.revokedToken.findFirst({
-            where: {
-                signature: signature
-            }
-        })
-        return revoked ? true : false;
-    } catch (err: Error | any) {
-        if (DEBUG) {
-            console.error("Caught Error: " + err.message);
-        }
-        return parseServerError(err)
-    }
-}
-
-/**
- * Checks if a user with the given userId exists in the database.
- * @param {number} userId - The id of the user to check existence for.
- * @returns {Promise<{ error: any, exist?: boolean }>} A promise that resolves to an object
- * containing an error (if any) and a boolean indicating if the user exists.
- */
-export const checkUserExistence = async (userId: number): Promise<{ error: any, exist?: boolean }> => {
-    try {
-        const user = await db.user.findUnique({
-            where: {
-                id: userId
-            }
-        })
-        return { exist: user ? true : false, error: null };
-    } catch (err: Error | any) {
-        if (DEBUG) {
-            console.error("Caught Error: " + err.message);
-        }
-        return parseServerError(err)
     }
 }
