@@ -43,11 +43,14 @@ export const parseServerError = (err: Error | any) => {
     }
 }
 
-export const errorResponse = (err: Error) => {
+export const handleError = (err: Error) => {
     const details = `${err.constructor.name} @${err.stack?.split('\n')[1]?.trim()?.match(/\((.*):(\d+):(\d+)\)/)?.[1]}: ` + err.message
     if (DEBUG) {
         (err instanceof ApiError ? console.warn : console.error)(`Caught ${details}`);
     }
+    return generateErrorResponse(err, details);
+}
+const generateErrorResponse = (err: Error, details: string| null) => {
     if (err instanceof ApiError) {
         return NextResponse.json({
             error: {
