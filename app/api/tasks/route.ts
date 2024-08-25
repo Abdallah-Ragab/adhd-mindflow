@@ -4,6 +4,7 @@ import { AuthenticateRequest, generateAccessToken, generateRefreshToken } from "
 import { NextResponse, NextRequest } from "next/server";
 import { parseServerError } from "../lib/helpers";
 
+const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
 const db = new PrismaClient().$extends(passwordExtension);
 
 
@@ -28,6 +29,9 @@ export async function GET(request: NextRequest) {
 
     }
   } catch (err: Error | any) {
+    if (DEBUG) {
+      console.error("Caught Error: " + err.message);
+  }
     return NextResponse.json({
       ...parseServerError(err)
     }, { status: 500 });

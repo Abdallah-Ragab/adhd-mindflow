@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         }
     } catch (err: Error | any) {
         if (DEBUG) {
-            console.error(err);
+            console.error("Caught Error: " + err.message);
         }
         return NextResponse.json({
             ...parseServerError(err)

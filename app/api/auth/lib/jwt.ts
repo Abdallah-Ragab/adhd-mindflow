@@ -5,6 +5,7 @@ import { parseServerError } from "@/app/api/lib/helpers";
 import { PrismaClient } from "@prisma/client";
 import errors from '@/app/api/lib/error/codes'
 
+const DEBUG = ((process.env.NODE_ENV ?? '') === 'development');
 const DEFAULT_IP = "::::";
 const db = new PrismaClient()
 
@@ -48,7 +49,10 @@ const getAccessToken = async (request: NextRequest) => {
             const cookie = await request.cookies.get('accesstoken');
             return cookie?.value ?? null;
         }
-    } catch (error) {
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
         // Handle error when body is empty or not in JSON format
         return null;
     }
@@ -61,7 +65,10 @@ export const getRefreshToken = async (request: NextRequest) => {
         else {
             return body?.refreshtoken
         }
-    } catch (error) {
+    } catch (err: Error | any ) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
         return await request.cookies.get('refreshtoken')?.value ?? null;
     }
 }
@@ -80,7 +87,7 @@ export const AuthenticateRequest = async (request: NextRequest) => {
     const accessToken = await getAccessToken(request) ?? '';
     const validation = await validateAccessToken(accessToken);
     const userExists = await isUserActive(validation.userId as number);
-    
+
     if (!validation.error && !userExists) {
         return {
             userId: validation.userId,
@@ -152,7 +159,7 @@ async function validateRefreshToken(refreshToken: string): Promise<{ userId: num
     }
 }
 
-const parseJWTError = function (payload: VerifyErrors|any) {
+const parseJWTError = function (payload: VerifyErrors | any) {
     let authError = errors.auth.GenericError;
     if (payload.name === 'TokenExpiredError') {
         authError = errors.auth.ExpiredToken
@@ -173,7 +180,7 @@ const parseJWTError = function (payload: VerifyErrors|any) {
     }
 }
 
-export async function revokeRefreshToken(refreshToken: string): Promise<{error:any}> {
+export async function revokeRefreshToken(refreshToken: string): Promise<{ error: any }> {
     try {
         // @ts-ignore
         const [payload, ok] = await getPayload(refreshToken);
@@ -191,10 +198,14 @@ export async function revokeRefreshToken(refreshToken: string): Promise<{error:a
                 error: false
             };
         } else {
+            console.log(payload)
             return parseJWTError(payload);
         }
-    } catch (error) {
-        return parseServerError(error);
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err);
     }
 }
 
@@ -207,8 +218,11 @@ export async function isRefreshTokenRevoked(refreshToken: string): Promise<boole
             }
         })
         return revoked ? true : false;
-    } catch (error) {
-        return parseServerError(error)
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err)
     }
 }
 
@@ -220,7 +234,10 @@ export async function isUserActive(userId: number): Promise<boolean | Object> {
             }
         })
         return revoked ? true : false;
-    } catch (error) {
-        return parseServerError(error)
+    } catch (err: Error | any) {
+        if (DEBUG) {
+            console.error("Caught Error: " + err.message);
+        }
+        return parseServerError(err)
     }
 }
