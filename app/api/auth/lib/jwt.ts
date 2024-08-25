@@ -29,14 +29,9 @@ export const generateRefreshToken = async (user: User, request: NextRequest) => 
 
 export const getRefreshTokenExpiry = async (refreshToken: string): Promise<number | null> => {
     // @ts-ignore
-    const [payload, ok] = await getPayload(refreshToken);
-
-    if (ok) {
-        return payload.exp;
-    }
-    else {
-        return null;
-    }
+    const decodedToken = await decodeToken(refreshToken) as { error: any, payload };
+    if (!decodedToken.error) return decodedToken.payload?.exp;
+    else return null;
 }
 
 const getAccessToken = async (request: NextRequest) => {
@@ -77,9 +72,12 @@ const getIP = async (request: NextRequest) => {
     return await request.ip || await request.headers.get('x-forwarded-for') || await request.headers.get('x-real-ip') || DEFAULT_IP;
 }
 
-const getPayload = async (token: string) => {
+const decodeToken = async (token: string) => {
     return await verify(token, process.env.JWT_SECRET as Secret, (err, decoded) => {
-        return err ? [err, false] : [decoded, true];
+        return {
+            error: err ?? null,
+            payload: decoded
+        }
     });
 }
 
@@ -130,35 +128,28 @@ export const AuthorizeRefreshToken = async (request: NextRequest) => {
 
 async function validateAccessToken(accessToken: string): Promise<{ userId: number | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
-    const [payload, ok] = await getPayload(accessToken);
+    const decodedToken = await decodeToken(refreshToken) as { error: any, payload };
+    if (!decodedToken.error) return {
+        userId: decodedToken.payload?.sub,
+        expiresAt: decodedToken.payload?.exp,
+        error: false
+    }
 
-    if (ok) {
-        return {
-            userId: payload?.sub,
-            expiresAt: payload?.exp,
-            error: false
-        }
-    }
-    else {
-        return parseJWTError(payload)
-    }
+    else return parseJWTError(decodedToken.error)
+
 }
 
 async function validateRefreshToken(refreshToken: string): Promise<{ userId: number | null, ip: string | null, expiresAt: number | null, error: Object | boolean }> {
     // @ts-ignore
-    const [payload, ok] = await getPayload(refreshToken);
+    const decodedToken = await decodeToken(refreshToken) as { error: any, payload };
+    if (!decodedToken.error) return {
+        userId: decodedToken.payload?.sub,
+        ip: decodedToken.payload?.ip,
+        expiresAt: decodedToken.payload?.exp,
+        error: false
+    }
 
-    if (ok) {
-        return {
-            userId: payload?.sub,
-            ip: payload?.ip,
-            expiresAt: payload?.exp,
-            error: false
-        }
-    }
-    else {
-        return parseJWTError(payload);
-    }
+    else return parseJWTError(decodedToken.error);
 }
 
 const parseJWTError = function (payload: VerifyErrors | any) {
@@ -185,18 +176,17 @@ const parseJWTError = function (payload: VerifyErrors | any) {
 export async function revokeRefreshToken(refreshToken: string): Promise<{ error: any }> {
     try {
         // @ts-ignore
-        const [payload, ok] = await getPayload(refreshToken);
-        const signature = refreshToken.split('.')[2];
+        const decodedToken = await decodeToken(refreshToken) as { error: any, payload }; const signature = refreshToken.split('.')[2];
 
-        if (ok) {
-            const userID = payload.sub;
+        if (!decodedToken.error) {
+            const userID = decodedToken.payload?.sub;
             const userExists = await checkUserExistence(userID)
 
             if (userExists.error) return userExists
             if (!userExists) return {
                 error: errors.auth.UserDoesNotExist
             }
-            
+
             const alreadyProvoked = await db.revokedToken.findUnique({
                 where: {
                     signature: signature,
@@ -215,8 +205,8 @@ export async function revokeRefreshToken(refreshToken: string): Promise<{ error:
                 error: false
             };
         } else {
-            console.log(payload)
-            return parseJWTError(payload);
+            console.log(decodedToken.payload)
+            return parseJWTError(decodedToken.error);
         }
     } catch (err: Error | any) {
         if (DEBUG) {
