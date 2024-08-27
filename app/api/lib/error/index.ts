@@ -40,7 +40,8 @@ export const handleApiException = (error: ApiException | Error) => {
         throw new Error(`Expected an instance of Error class but got a reference to the class instead`);
     }
 
-    const exception = error instanceof ApiException ? error : ServerException.fromError(error)
+    // const exception = error instanceof ApiException ? error : ServerException.fromError(error)
+    const exception = error instanceof ApiException ? error : new ServerException(Exception.fromError(error))
 
     if (DEBUG) {
         console.warn(exception.log);
@@ -90,10 +91,9 @@ export class Exception extends Error {
 export class ApiException extends Exception {
     statusCode: number = 400;
     message: string = 'Something went wrong with your request';
-    code: string = "GENERIC_ERROR";
+    code: string = "api";
 
     response() {
-        console.log("getResponse called in ApiException")
         return NextResponse.json({
             error: {
                 ...this.json()
@@ -113,7 +113,7 @@ export class ApiException extends Exception {
 export class ServerException extends ApiException {
     statusCode: number = 500;
     message: string = 'Internal server error';
-    code: string = 'SERVER_ERROR';
+    code: string = this.code + '.server';
     internalException: Exception;
 
     constructor(exception: Exception) {
@@ -136,4 +136,23 @@ export class ServerException extends ApiException {
         }, { status: this.statusCode });
     }
 
+}
+
+export class ValidationException extends ApiException {
+    statusCode: number = 400;
+    message: string = "could not validate the submitted data";
+    code: string = this.code + '.validation';
+    issues: {[key: string]: string[]};
+
+    constructor(issues: { [key: string]: string[] }) {
+        super();
+        this.issues = issues;
+    }
+
+    json() {
+        return {
+            ...super.json(),
+            issues: this.issues
+        }
+    }
 }
