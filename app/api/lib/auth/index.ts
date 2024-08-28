@@ -53,7 +53,7 @@ export const AuthenticateRequest = async (request: NextRequest): Promise<AccessT
     const accessTokenDetails = await validateAccessToken(accessToken);
     const userExists = await db.user.exists({ id: accessTokenDetails.userId as number })
 
-    if (!userExists) throw LoginUserDoesNotExistError
+    if (!userExists) throw new LoginUserDoesNotExistError
 
     return accessTokenDetails;
 }
@@ -73,11 +73,11 @@ export const AuthorizeRefreshToken = async (request: NextRequest): Promise<Refre
     const requestIPAddress = await extractIPAddress(request);
 
     if (refreshTokenDetails.ip && refreshTokenDetails?.ip !== DEFAULT_IP && refreshTokenDetails.ip !== requestIPAddress) {
-        throw UnauthorizedUseOfTokenError
+        throw new UnauthorizedUseOfTokenError
     }
 
     const userExists = await db.user.exists({ id: refreshTokenDetails.userId as number })
-    if (!userExists) throw UserNotFoundError
+    if (!userExists) throw new UserNotFoundError
 
     return refreshTokenDetails;
 }
@@ -94,7 +94,7 @@ export const revokeRefreshToken = async (refreshToken: string): Promise<void> =>
     const userID = refreshTokenDetails.userId as number;
     const userExists = await db.user.exists({ id: userID })
 
-    if (!userExists) throw UserNotFoundError
+    if (!userExists) throw new UserNotFoundError
     
     const provoked = await db.revokedToken.exists({ signature: signature})
 
