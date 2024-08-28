@@ -42,15 +42,20 @@ export class Exception extends Error {
     }
 
     parseErrorStackLine(stack?: string, index: number = 1): traceObject {
-        const expression = /at\s(\w+)\s\((.*):(\d*):(\d*)\)/
-        const match = stack?.split('\n')[index]?.trim()?.match(expression)
+        const lineExpression = /at\s(.*)\s\((.*)\)/
+        const lineMatch = stack?.split('\n')[index]?.match(lineExpression);
+
+        const locationExpression = /(.*):(\d*):(\d*)/
+        const locationMatch = lineMatch?.[2]?.match(locationExpression);
+
         const details = {
-            func: match?.[1] ?? "",
-            file: match?.[2] ?? "",
-            line: match?.[3] ?? "",
-            column: match?.[4] ?? ""
+            func: lineMatch?.[1] ?? "",
+            location: lineMatch?.[2] ?? "",
+            file: locationMatch?.[1] ?? "",
+            line: locationMatch?.[2] ?? "",
+            column: locationMatch?.[3] ?? ""
         }
-        return { formatted: `[${details.func}]${details.file}:${details.line}:${details.column}`, ...details };
+        return { formatted: `[${details.func}]${details.location}`, ...details };
     }
 
     json() {
