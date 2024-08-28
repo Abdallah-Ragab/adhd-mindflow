@@ -1,7 +1,4 @@
-import { VerifyErrors } from "jsonwebtoken";
-import errorDetails from "./details"
 import { NextResponse } from "next/server";
-import { ExpiredTokenError, InvalidTokenError, MissingTokenError, TokenError } from "../jwt/errors";
 
 const DEBUG = (process.env.NODE_ENV ?? "") === 'development';
 
@@ -11,20 +8,6 @@ type traceObject = {
     file: string,
     line: string,
     column: string
-}
-
-/**
- * Parses a JWT error and returns the corresponding error object.
- * @param {VerifyErrors | any} error - The JWT verification error object.
- * @returns {ExpiredTokenError | MissingTokenError | InvalidTokenError | TokenError} - The corresponding error object based on the JWT error.
- */
-export const parseJWTError = (error: VerifyErrors | any) => {
-    if (error.name === 'TokenExpiredError') return new ExpiredTokenError
-    else if (error.name === 'JsonWebTokenError') {
-        if (error.message === 'jwt must be provided') return new MissingTokenError
-        else return new InvalidTokenError
-    }
-    return new TokenError
 }
 
 export const handleApiException = (error: ApiException | Error) => {

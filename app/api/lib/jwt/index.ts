@@ -1,5 +1,5 @@
-import { Secret, verify } from "jsonwebtoken";
-import { parseJWTError } from "../error";
+import { Secret, verify, VerifyErrors } from "jsonwebtoken";
+import { ExpiredTokenError, InvalidTokenError, MissingTokenError, TokenError } from "./errors";
 
 export type AccessTokenDetails = {
     userId?: number,
@@ -59,4 +59,18 @@ export const validateRefreshToken = async (refreshToken: string): Promise<Refres
         ip: decodedToken?.ip,
         expiresAt: decodedToken?.exp,
     }
+}
+
+/**
+ * Parses a JWT error and returns the corresponding error object.
+ * @param {VerifyErrors | any} error - The JWT verification error object.
+ * @returns {ExpiredTokenError | MissingTokenError | InvalidTokenError | TokenError} - The corresponding error object based on the JWT error.
+ */
+export const parseJWTError = (error: VerifyErrors | any) => {
+    if (error.name === 'TokenExpiredError') return new ExpiredTokenError
+    else if (error.name === 'JsonWebTokenError') {
+        if (error.message === 'jwt must be provided') return new MissingTokenError
+        else return new InvalidTokenError
+    }
+    return new TokenError
 }
