@@ -15,6 +15,15 @@ const existsExtension = Prisma.defineExtension({
             const result = await (context as any).findFirst({ where })
             return result !== null
           },
+          async existsOrNull<T>(
+            this: T,
+            where: Prisma.Args<T, 'findFirst'>['where']
+          ): Promise<T | null> {
+            // Get the current model at runtime
+            const context = Prisma.getExtensionContext(this)
+    
+            return await (context as any).findFirst({ where })
+          }
         },
       },
 })
