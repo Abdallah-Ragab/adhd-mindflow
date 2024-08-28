@@ -99,6 +99,7 @@ export class ServerException extends ApiException {
     constructor(exception: Exception) {
         super();
         this.internalException = exception;
+        this.log = `${this.name}[${this.code}]: ${this.message} \n\t ${this.internalException.log}`;
     }
 
     static fromError(error: Error) {
