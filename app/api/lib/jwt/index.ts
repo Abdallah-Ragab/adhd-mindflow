@@ -1,6 +1,14 @@
 import { Secret, verify } from "jsonwebtoken";
 import { parseJWTError } from "../error";
 
+type AccessToken = {
+    userId?: number,
+    expiresAt?: number,
+}
+interface RefreshToken extends AccessToken {
+    ip?: string,
+}
+
 /**
  * Decode a JWT token using the provided secret key.
  * @param {string} token - The JWT token to decode.
@@ -31,7 +39,7 @@ export const getTokenExp = async (token: string): Promise<number | null> => {
  * @returns A Promise that resolves to an object containing the user ID, expiration time,
  * and error status.
  */
-export const validateAccessToken = async (accessToken: string): Promise<{ userId?: number, expiresAt?: number }> => {
+export const validateAccessToken = async (accessToken: string): Promise<AccessToken> => {
     const decodedToken = await decodeToken(accessToken);
     return {
         userId: decodedToken?.sub,
@@ -42,9 +50,9 @@ export const validateAccessToken = async (accessToken: string): Promise<{ userId
 /**
  * Validates a refresh token by decoding it and extracting relevant information.
  * @param {string} refreshToken - The refresh token to validate.
- * @returns {Promise<{ userId?: number, ip?: string, expiresAt?: number }>} An object containing the decoded information from the refresh token.
+ * @returns {Promise<RefreshToken>} An object containing the decoded information from the refresh token.
  */
-export const validateRefreshToken = async (refreshToken: string): Promise<{ userId?: number, ip?: string, expiresAt?: number }> => {
+export const validateRefreshToken = async (refreshToken: string): Promise<RefreshToken> => {
     const decodedToken = await decodeToken(refreshToken);
     return {
         userId: decodedToken?.sub,
