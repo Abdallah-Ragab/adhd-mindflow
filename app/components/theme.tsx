@@ -26,6 +26,7 @@ const materialTheme = getMaterialTheme({
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
+                    color: 'var(--joy-palette-neutral-plainColor)',
                     '&.Mui-focused': {
                     },
                     '& .MuiButtonBase-root': {
@@ -37,7 +38,10 @@ const materialTheme = getMaterialTheme({
                 },
                 notchedOutline: {
                     borderRadius: 'var(--joy-radius-md)',
+                    borderColor: 'var(--joy-palette-neutral-outlinedBorder)',
+                    color: 'var(--joy-palette-neutral-outlinedBorder)',
                     '.Mui-focused &': {
+                        color: 'var(--joy-palette-primary-plainColor)',
                         borderColor: 'var(--joy-palette-primary-plainColor)!important',
                     },
                 }
@@ -46,6 +50,7 @@ const materialTheme = getMaterialTheme({
         MuiFormLabel: {
             styleOverrides: {
                 root: {
+                    color: 'var(--joy-palette-neutral-plainColor)',
                     '&.Mui-focused': {
                         color: 'var(--joy-palette-primary-plainColor)',
                     },
@@ -55,8 +60,19 @@ const materialTheme = getMaterialTheme({
         MuiButtonBase: {
             styleOverrides: {
                 root: {
+                    color: 'var(--joy-palette-neutral-plainColor)!important',
                     '&.Mui-selected': {
-                        backgroundColor: 'var(--joy-palette-primary-plainColor)!important',
+                        // backgroundColor: 'var(--joy-palette-primary-plainColor)!important',     
+                        backgroundColor: 'var(--joy-palette-primary-softBg)!important',     
+                    },
+                    '&.MuiPickersDay-today': {
+                        borderColor: 'var(--joy-palette-primary-plainColor)',
+                    },
+                    '&:hover': {
+                        color: 'var(--joy-palette-primary-plainColor)',
+                    },
+                    '&.Mui-disabled': {
+                        color: 'var(--joy-palette-neutral-disabledColor)',
                     },
                 },
             }
@@ -66,13 +82,27 @@ const materialTheme = getMaterialTheme({
                 root: {
                     '&.MuiPaper-root': {
                         borderRadius: 'var(--joy-radius-md)',
+                        color: 'var(--joy-palette-neutral-softColor)',
+                        backgroundColor: 'var(--joy-palette-neutral-softBg)',
                         '& .MuiPickersYear-yearButton.Mui-selected': {
                             backgroundColor: 'var(--joy-palette-primary-plainColor)',
                         },
                     },
                 },
             }
-        }
+        },
+        MuiPickersCalendarHeader: {
+            styleOverrides: {
+                root: {
+                    color: ''
+                },
+                switchHeader: {
+                    color: 'var(--joy-palette-neutral-plainColor)',
+                    backgroundColor: 'var(--joy-palette-neutral-softBg)',
+                },
+            },
+        },
+
     }
 });
 
@@ -83,6 +113,7 @@ import Option from '@mui/joy/Option';
 import { BorderColor } from '@mui/icons-material';
 import { colors } from '@mui/material';
 import { lightBlue, purple, teal } from '@mui/material/colors';
+import { root } from 'postcss';
 
 // const ThemeModeContext = createContext();
 
