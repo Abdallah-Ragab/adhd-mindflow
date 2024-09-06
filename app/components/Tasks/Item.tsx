@@ -1,7 +1,7 @@
 'use client';
 import React from "react"
 import { TimerRounded } from "@mui/icons-material"
-import { Box, Checkbox, ListItem } from "@mui/joy"
+import { Box, Checkbox, ListItem, Typography } from "@mui/joy"
 import { formatTime } from "@/app/lib/time"
 import { SmallTimer } from "../timer";
  function TimeTaskItem({ task }: { task: { title: string, description:string, totalTime: number, spentTime: number, done:boolean } }) {
@@ -31,9 +31,10 @@ import { SmallTimer } from "../timer";
                 height: open ? 'auto' : '0px',
                 opacity: open ? 1 : 0,
                 padding: open ? '' : '0px',
-                color: 'neutral.plainColor'
+                color: 'neutral.plainColor',
+                backgroundColor: 'neutral.softBg'
             }}>
-                <p>{task.description}</p>
+                <Typography sx={{color:"var(--joy-palette-neutral-solidBg)"}}> {task.description}</Typography>
                 <SmallTimer id={task.title} persistent={true} />
             </Box>
         </div>
