@@ -43,11 +43,11 @@ export const RadioGroupSelection = ({ label, selections, fullWidth, state: [valu
         <>
             <div className='space-y-3'>
                 {label && <FormLabel className='mb-5'>{label}</FormLabel>}
-                <RadioGroup name="criteria" className={'flex-row space-x-2' + (fullWidth && ' justify-stretch')}>
+                <RadioGroup name="criteria" className={'!flex-row space-x-2' + (fullWidth && ' justify-stretch')}>
                     {selections.map((sel, idx) => {
                         return (
                             <FormControl
-                                className={'shadow rounded-xl flex-row border-solid border-2 p-2 space-x-2 min-w-6' + (fullWidth && ' w-full')}
+                                className={'shadow rounded-xl !flex-row border-solid border-2 p-2 space-x-2 min-w-6' + (fullWidth && ' w-full')}
                                 sx={(theme) => ({ borderColor:  (value === sel.value) ? theme.vars.palette.primary.plainColor : theme.vars.palette.neutral.outlinedBorder})}
                                 onClick={() => { setValue(sel.value) }}
                             >
