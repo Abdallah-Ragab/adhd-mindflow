@@ -1,5 +1,5 @@
 import Form from "./Form";
-import Item from "./Item";
+import { TimeTaskItem } from "./Item";
 import Calender from "./Calender";
 
-export default { Form, Item, Calender };
+export default { Form, TimeTaskItem, Calender };
