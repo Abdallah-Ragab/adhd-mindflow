@@ -8,7 +8,7 @@ const getStoredTimer = (id:string) => {
     const storedTimer = localStorage.getItem(id)
     return storedTimer ? JSON.parse(storedTimer) : null
 }
-const Timer = ({ id = '', persistent = false }: { id: string, persistent: Boolean }) => {
+export const HeaderTimer = ({ id = '', persistent = false }: { id: string, persistent: Boolean }) => {
     id = id ? id : Math.random().toString(36).substr(2, 9)
     const uniqeId = `timer-${id}`
     const [time, setTime] = useState(getStoredTimer(uniqeId) ? getStoredTimer(uniqeId).time : 0)
@@ -63,4 +63,60 @@ const Timer = ({ id = '', persistent = false }: { id: string, persistent: Boolea
     )
 }
 
-export default Timer
+export const SmallTimer = ({ id = '', persistent = false }: { id: string, persistent: Boolean }) => {
+    id = id ? id : Math.random().toString(36).substr(2, 9)
+    const uniqeId = `timer-${id}`
+    const [time, setTime] = useState(getStoredTimer(uniqeId) ? getStoredTimer(uniqeId).time : 0)
+    const [timerOn, setTimerOn] = useState(getStoredTimer(uniqeId) ? getStoredTimer(uniqeId).timerOn : false)
+    const lastOnRef = useRef(getStoredTimer(uniqeId) ? getStoredTimer(uniqeId).lastOn : new Date().getTime())
+
+    useEffect(() => {
+        if (persistent) {
+            const now = new Date().getTime()
+            const diff = Math.floor((now - lastOnRef.current) / 1000)
+            if (timerOn && (diff > 1)) {
+                setTime(time + diff)
+            }
+        }
+        else {
+            setTimerOn(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem(uniqeId, JSON.stringify({
+            time,
+            timerOn,
+            lastOn: lastOnRef.current
+        }))
+    }, [time, timerOn])
+
+    useEffect(() => {
+        if (timerOn) {
+            const interval = setInterval(() => {
+                setTime(time => time + 1)
+                lastOnRef.current = new Date().getTime()
+            }, 1000)
+            return () => clearInterval(interval)
+        }
+    }, [timerOn])
+
+    return (
+        <div className='flex justify-between items-baseline w-fi'>
+            <div>
+                <Typography className='!text-4xl font-bold w-72' >{formatTime(time)}</Typography>
+                <div className='flex justify-between w-40 text-xs pl-2 p-1 space-x-2 opacity-80'>
+                    <span>Hours</span>
+                    <span>Minutes</span>
+                    <span>Seconds</span>
+                </div>
+            </div>
+            <div>
+            <IconButton onClick={() => setTimerOn(!timerOn)} className='hover:!bg-transparent'>
+                {timerOn ? <PauseCircle className='!text-3xl' /> : <PlayCircle className='!text-3xl'/>}
+            </IconButton>
+
+            </div>
+        </div>
+    )
+}
