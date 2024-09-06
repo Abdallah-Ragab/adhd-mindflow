@@ -1,37 +1,21 @@
-'use client'
 import react from 'react'
-import Task from '../components/Task'
+import Task from '../components/Tasks'
 import { ModeSwitcher } from '../components/theme'
 import { Box, Button, Checkbox, Drawer, List, ListItem, Input, IconButton, Typography } from '@mui/joy';
 import Timer from '../components/timer';
 import bg from '@/public/bg.jpg'
 import { Numbers, SearchRounded, Timer10Rounded, TimerRounded } from '@mui/icons-material'
 import { Search } from '../components/search';
-import { DateCalendar } from '@mui/x-date-pickers'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import FormDrawer from '../components/FormDrawer';
 
 
 const index = () => {
-    const [tasks, setTasks] = react.useState([] as { id: number, name: string }[])
-    const [open, setOpen] = react.useState(false);
+    // const [tasks, setTasks] = react.useState([] as { id: number, name: string }[])
 
-    react.useEffect(() => {
-        setTasks([{ id: 1, name: 'Task 1' }, { id: 2, name: 'Task 2' }])
-    }, [])
+    // react.useEffect(() => {
+    //     setTasks([{ id: 1, name: 'Task 1' }, { id: 2, name: 'Task 2' }])
+    // }, [])
 
-    const toggleDrawer =
-        (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-            if (
-                event.type === 'keydown' &&
-                ((event as React.KeyboardEvent).key === 'Tab' ||
-                    (event as React.KeyboardEvent).key === 'Shift')
-            ) {
-                return;
-            }
-
-            setOpen(inOpen);
-        };
     return (
 
         <Box sx={{
@@ -45,14 +29,7 @@ const index = () => {
         }}  >
             <div className='space-y-3'>
                 <Search />
-                <Box sx={{ display: 'flex' }}>
-                    <Button variant="outlined" color="neutral" onClick={toggleDrawer(true)}>
-                        Open drawer
-                    </Button>
-                    <Drawer open={open} anchor="right" onClose={toggleDrawer(false)} size='md'>
-                        <Task.Form />
-                    </Drawer>
-                </Box>
+                <FormDrawer />
                 <Box variant='oulined' className={`w-full rounded-xl h-60 pt-10 pl-6 bg-cover space-y-3`} sx={{
                     backgroundImage: `url(${bg.src})`,
                 }}>
@@ -101,11 +78,7 @@ const index = () => {
                                 <TaskItem task={task} key={idx} />
                             )
                         })} */}
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-
-                    <DateCalendar />
-                </LocalizationProvider>
-
+                <Task.Calender />
             </div>
         </Box>
     )

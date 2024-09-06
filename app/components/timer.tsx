@@ -1,3 +1,4 @@
+'use client';
 import { PauseCircle, PlayCircle } from '@mui/icons-material'
 import { IconButton, Typography } from '@mui/joy'
 import React, { useEffect, useRef, useState } from 'react'
