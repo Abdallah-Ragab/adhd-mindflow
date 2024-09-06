@@ -113,7 +113,9 @@ export const SmallTimer = ({ id = '', persistent = false }: { id: string, persis
             </div>
             <div>
             <IconButton onClick={() => setTimerOn(!timerOn)} className='hover:!bg-transparent'>
-                {timerOn ? <PauseCircle className='!text-3xl' /> : <PlayCircle className='!text-3xl'/>}
+                {timerOn ? 
+                <PauseCircle className='!text-3xl' sx={{color:'var(--joy-palette-primary-softColor)!important'}} /> : 
+                <PlayCircle className='!text-3xl' sx={{color:'var(--joy-palette-primary-softColor)!important'}}/> }
             </IconButton>
 
             </div>
