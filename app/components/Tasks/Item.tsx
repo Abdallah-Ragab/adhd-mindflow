@@ -4,8 +4,7 @@ import { TimerRounded } from "@mui/icons-material"
 import { Box, Checkbox, ListItem } from "@mui/joy"
 import { formatTime } from "@/app/lib/time"
 import { SmallTimer } from "../timer";
-
-export default function TimeTaskItem({ task }: { task: { title: string, totalTime: number, spentTime: number, done:boolean } }) {
+ function TimeTaskItem({ task }: { task: { title: string, description:string, totalTime: number, spentTime: number, done:boolean } }) {
     const [open, setOpen] = React.useState(false)
     const [checked, setChecked] = React.useState(task.done)
     return (
@@ -28,14 +27,16 @@ export default function TimeTaskItem({ task }: { task: { title: string, totalTim
                     <TimerRounded />
                 </div>
             </ListItem>
-            <Box className='w-full duration-300 transition-all ease-in-out overflow-hidden p-4' sx={{
+            <Box className='w-full duration-300 transition-all ease-in-out overflow-hidden p-4 space-y-2' sx={{
                 height: open ? 'auto' : '0px',
                 opacity: open ? 1 : 0,
                 padding: open ? '' : '0px',
+                color: 'neutral.plainColor'
             }}>
-                Details
+                <p>{task.description}</p>
                 <SmallTimer id={task.title} persistent={true} />
             </Box>
         </div>
     )
 }
+export { TimeTaskItem }
