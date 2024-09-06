@@ -10,9 +10,16 @@
     "generate": "ts-node prisma/scripts/generateFixtures.ts"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.0.1",
+    "@mui/joy": "^5.0.0-beta.48",
+    "@mui/material": "^6.0.1",
+    "@mui/x-date-pickers": "^7.15.0",
     "@prisma/client": "^5.18.0",
     "bcrypt": "^5.1.1",
     "compromise": "^14.14.0",
+    "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.5",
     "react": "^18",
