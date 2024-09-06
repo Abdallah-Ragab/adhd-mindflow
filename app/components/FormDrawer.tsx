@@ -20,20 +20,15 @@ export default function FormDrawer() {
     };
 
     return (
-        <><Box sx={{ display: 'flex' }}>
+        <>
+        <Box sx={{ display: 'flex' }}>
             <Button variant="outlined" color="neutral" onClick={toggleDrawer(true)}>
                 Open drawer
             </Button>
             <Drawer open={open} anchor="right" onClose={toggleDrawer(false)} size='md'>
                 <Task.Form />
             </Drawer>
-        </Box><Box sx={{ display: 'flex' }}>
-                <Button variant="outlined" color="neutral" onClick={toggleDrawer(true)}>
-                    Open drawer
-                </Button>
-                <Drawer open={open} anchor="right" onClose={toggleDrawer(false)} size='md'>
-                    <Task.Form />
-                </Drawer>
-            </Box></>
+        </Box>
+        </>
     )
 }
