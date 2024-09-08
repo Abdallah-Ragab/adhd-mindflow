@@ -82,8 +82,8 @@ export default function Header() {
           color="none"
           sx={{ display: { xs: 'none', sm: 'inline-flex' }, borderRadius: '50%' }}
         >
-          {/* <LanguageRoundedIcon /> */}
           <Image src="/logo.png" alt="Joy UI" width={60} height={60} />
+          <span className="font-['Pacifico'] ml-2">MindFlow</span>
         </IconButton>
         <Button
           variant="plain"
