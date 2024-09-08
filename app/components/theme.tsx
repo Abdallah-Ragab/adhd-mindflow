@@ -66,7 +66,7 @@ const materialTheme = getMaterialTheme({
                         backgroundColor: 'var(--joy-palette-primary-softBg)!important',     
                     },
                     '&.MuiPickersDay-today': {
-                        borderColor: 'var(--joy-palette-primary-plainColor)',
+                        borderColor: 'var(--joy-palette-primary-plainColor)!important',
                     },
                     '&:hover': {
                         color: 'var(--joy-palette-primary-plainColor)',
