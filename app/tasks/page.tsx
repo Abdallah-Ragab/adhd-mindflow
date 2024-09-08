@@ -1,13 +1,8 @@
-import react from 'react'
-import Task from '../components/Tasks'
-import { ModeSwitcher } from '../components/theme'
-import { Box, Button, Checkbox, Drawer, List, ListItem, Input, IconButton, Typography } from '@mui/joy';
-import { HeaderTimer } from '../components/timer';
-import bg from '@/public/bg.jpg'
-import { Checklist, Numbers, SearchRounded, Timer10Rounded, TimerRounded } from '@mui/icons-material'
+import Task from '../components/Tasks';
+import { Box } from '@mui/joy';
+import bg from '@/public/bg.jpg';
 import { Search } from '../components/search';
 import FormDrawer from '../components/FormDrawer';
-import { TaskTimer } from '../components/Tasks/Timer';
 
 const index = () => {
     const tasks = [
