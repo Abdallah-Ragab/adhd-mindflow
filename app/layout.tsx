@@ -21,17 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <ThemeProvider>
         <body>
-          <Layout.RootWithMobileNav>
-            <Layout.Header>
-              <Header />
-            </Layout.Header>
-            <Layout.SideNav>
-              <Navigation />
-            </Layout.SideNav>
-            <Layout.Main>
-            {children}
-            </Layout.Main>
-          </Layout.RootWithMobileNav>
+          {children}
         </body>
       </ThemeProvider>
     </html>
