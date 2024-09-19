@@ -1,15 +1,17 @@
 import Main from "./Main";
 import Header from "./Header";
-import Root from "./Root";
-import RootWithMobileNav from "./RootWithMobileNav";
+import DashboardRoot from "./DashboardRoot";
+import DashboardRootWithMobileNav from "./DashboardRootWithMobileNav";
 import SideDrawer from "./SideDrawer";
 import SideNav from "./SideNav";
+import LandingRootWithMobileNav from "./LandingRootWithMobileNav";
 
 export default {
     Main,
     Header,
-    Root,
-    RootWithMobileNav,
+    DashboardRoot,
+    DashboardRootWithMobileNav,
+    LandingRootWithMobileNav,
     SideDrawer,
     SideNav
 }
