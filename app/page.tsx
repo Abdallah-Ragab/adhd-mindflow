@@ -1,113 +1,148 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React from 'react';
+import { CssBaseline, Button, Container, Typography, Grid, Card, CardContent, Link, Box, AspectRatio } from '@mui/joy';
+import Layout from './components/Layout';
+import Header from './components/Header';
+import Image from 'next/image';
+
+const LandingPage = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Layout.LandingRootWithMobileNav>
+      <Layout.Header>
+        <Header />
+      </Layout.Header>
+      <CssBaseline />
+      <Container maxWidth="lg">
+        {/* Intro Section */}
+        <Box
+          sx={{
+            height: '100vh',
+            backgroundImage: 'url("/path-to-your-cover-image.jpg")', // replace with your cover image
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#fff',
+          }}
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <Typography level="h1" fontSize="4rem">
+            MindFlow
+          </Typography>
+          <Typography level="h3" fontSize="1.5rem" sx={{ mt: 2 }}>
+            Enhancing Productivity for ADHD Minds
+          </Typography>
+          <Box sx={{ mt: 4 }}>
+            <Button variant="solid" size="lg" component={Link} href="/app">
+              Start Using MindFlow
+            </Button>
+          </Box>
+        </Box>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+        {/* Navigation Links */}
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Link href="#features" sx={{ mx: 2 }}>Features</Link>
+          <Link href="#about" sx={{ mx: 2 }}>About</Link>
+        </Box>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+        {/* Feature Section */}
+        <Box id="features" sx={{ mt: 8 }}>
+          <Typography level="h2" fontSize="3rem" textAlign="center">
+            Key Features
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            {/* Feature 1: Task & Habit Tracking */}
+            <Grid item xs={12} md={4}>
+              <Card>
+                <AspectRatio ratio="16/9">
+                  <Image
+                    src="/landing-happy.jpeg"
+                    alt="Task & Habit Tracking"
+                    width={300}
+                    height={300}
+                  />
+                </AspectRatio>
+                <CardContent>
+                  <Typography level="h5"  fontWeight='bold' marginBottom='5px'>Task & Habit Tracking</Typography>
+                  <Typography>
+                    Track your tasks, habits, and long-term goals with personalized task types: time-based, count-based, or simple checklists.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            {/* Feature 2: Progress Reporting */}
+            <Grid item xs={12} md={4}>
+              <Card>
+                <AspectRatio ratio="16/9">
+                  <Image
+                    src="/landing-time.jpeg"
+                    alt="Progress Reporting"
+                    width={300}
+                    height={300}
+                  />
+                </AspectRatio>
+                <CardContent>
+                  <Typography level="h5"  fontWeight='bold' marginBottom='5px'>Progress Reporting</Typography>
+                  <Typography>
+                    Get detailed insights on your progress and stay motivated with reports that track task completion and goal progress.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Feature 3: Focus Sessions & Task Recommendations */}
+            <Grid item xs={12} md={4}>
+              <Card>
+                <AspectRatio ratio="16/9">
+                  <Image
+                    src="/landing-study.jpeg"
+                    alt="Focus Sessions"
+                    width={300}
+                    height={300}
+                  />
+                </AspectRatio>
+                <CardContent>
+                  <Typography level="h5"  fontWeight='bold' marginBottom='5px'>Focus Sessions & Task Recommendations</Typography>
+                  <Typography>
+                    Enter focused sessions where MindFlow suggests tasks based on novelty, urgency, interest, and challenge, ideal for ADHD minds.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* About Section */}
+        <Box id="about" sx={{ mt: 8, mb: 8 }}>
+          <Typography level="h2" fontSize="3rem" textAlign="center">
+            About MindFlow
+          </Typography>
+          <Typography sx={{ mt: 4 }}>
+            MindFlow was born from a personal journey of managing ADHD in a world filled with distractions. We wanted to create a tool that is tailored to how ADHD minds work—prioritizing not just importance, but novelty, interest, urgency, and challenge.
+          </Typography>
+
+          {/* Team Links */}
+          <Box sx={{ mt: 4 }}>
+            <Typography level="h4">Developer</Typography>
+            <Typography>
+              <Link href="https://linkedin.com" target="_blank">LinkedIn</Link> | <Link href="https://github.com" target="_blank">GitHub</Link> | <Link href="https://twitter.com" target="_blank">Twitter</Link>
+            </Typography>
+          </Box>
+
+          {/* GitHub Repository Link */}
+          <Box sx={{ mt: 4 }}>
+            <Button variant="solid" component={Link} href="https://github.com/your-repo-link" target="_blank">
+              View on GitHub
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+    </Layout.LandingRootWithMobileNav>
   );
-}
+};
+
+export default LandingPage;
