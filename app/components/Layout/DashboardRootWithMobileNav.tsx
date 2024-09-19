@@ -1,10 +1,10 @@
 'use client';
 import Navigation from "../Navigation";
-import Root from "./Root";
+import DashboardRoot from "./DashboardRoot";
 import SideDrawer from "./SideDrawer";
 import * as React from 'react';
 
-export default function RootWithMobileNav({ children }: { children: React.ReactNode }) {
+export default function DashboardRootWithMobileNav({ children }: { children: React.ReactNode }) {
     'use client'
 
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -17,7 +17,7 @@ export default function RootWithMobileNav({ children }: { children: React.ReactN
                 </SideDrawer>
             )}
 
-            <Root
+            <DashboardRoot
                 sx={[
                     drawerOpen && {
                         height: '100vh',
@@ -26,7 +26,7 @@ export default function RootWithMobileNav({ children }: { children: React.ReactN
                 ]}
             >
                 {children}
-            </Root>
+            </DashboardRoot>
         </>
     )
 }

@@ -1,6 +1,6 @@
 import { Box, BoxProps } from "@mui/joy";
 
-export default function Root(props: BoxProps) {
+export default function LandingRoot(props: BoxProps) {
     return (
       <Box
         {...props}
@@ -8,11 +8,7 @@ export default function Root(props: BoxProps) {
           {
             bgcolor: 'background.appBody',
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'minmax(64px, 200px) minmax(450px, 1fr)',
-              md: 'minmax(160px, 300px) minmax(300px, 1fr)',
-            },
+            gridTemplateColumns:'1fr',
             gridTemplateRows: '64px 1fr',
             minHeight: '100vh',
           },
