@@ -32,3 +32,80 @@
     text-wrap: balance;
   }
 }
+
+
+@layer base {
+  :root {
+    --navy: 207 50% 25%;
+    --navy-foreground: 207 40% 98%;
+    --primary-hue: 207;
+    --secondary-hue: 140;
+    --background: 0 0% 100%;
+    --secondary-background: var(--primary-hue) 10% 97%;
+    --foreground: var(--primary-hue) 84% 4.9%;
+    --card: var(--primary-hue) 10% 97%;
+    --card-foreground: var(--primary-hue) 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--primary-hue) 84% 4.9%;
+    --primary: var(--primary-hue) 83.2% 45.3%;
+    --primary-foreground: var(--secondary-hue) 40% 98%;
+    --secondary: var(--secondary-hue) 40% 96.1%;
+    --secondary-foreground: var(--primary-hue) 47.4% 11.2%;
+    --muted: var(--secondary-hue) 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: var(--primary-hue) 50% 100%;
+    --accent-foreground: var(--primary-hue) 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: var(--secondary-hue) 40% 98%;
+    --border: var(--primary-hue) 31.8% 91.4%;
+    --input: var(--primary-hue) 31.8% 91.4%;
+    --ring: var(--primary-hue) 83.2% 53.3%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: var(--primary-hue) 30% 4.9%;
+    --secondary-background: var(--primary-hue) 20% 7%;
+    --foreground: var(--secondary-hue) 40% 98%;
+    --card: var(--primary-hue) 20% 7%;
+    --card-foreground: var(--secondary-hue) 40% 98%;
+    --popover: var(--primary-hue) 84% 4.9%;
+    --popover-foreground: var(--secondary-hue) 40% 98%;
+    --primary: var(--primary-hue) 70% 40%;
+    --primary-foreground: var(--primary-hue) 47.4% 100%;
+    --secondary: var(--primary-hue) 32.6% 17.5%;
+    --secondary-foreground: var(--secondary-hue) 40% 98%;
+    --muted: var(--primary-hue) 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: var(--primary-hue) 50% 17.5%;
+    --accent-foreground: var(--primary-hue) 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: var(--secondary-hue) 40% 98%;
+    --border: 207 32.6% 17.5%;
+    --input: 197 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+
+
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
