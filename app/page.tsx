@@ -8,10 +8,7 @@ import Image from 'next/image';
 
 const LandingPage = () => {
   return (
-    <Layout.LandingRootWithMobileNav>
-      <Layout.Header>
-        <Header />
-      </Layout.Header>
+    <>
       <CssBaseline />
       <Container maxWidth="lg">
         {/* Intro Section */}
@@ -36,7 +33,7 @@ const LandingPage = () => {
             Enhancing Productivity for ADHD Minds
           </Typography>
           <Box sx={{ mt: 4 }}>
-            <Button variant="solid" size="lg" component={Link} href="/app">
+            <Button variant="solid" size="lg" component={Link} href="/tasks">
               Start Using MindFlow
             </Button>
           </Box>
@@ -141,7 +138,7 @@ const LandingPage = () => {
           </Box>
         </Box>
       </Container>
-    </Layout.LandingRootWithMobileNav>
+    </>
   );
 };
 
