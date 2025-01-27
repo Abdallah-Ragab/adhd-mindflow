@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
         if (!user) throw new LoginUserDoesNotExistError
 
         const passwordsMatch = user.verifyPassword(validation.data.password);
-
+        console.log(passwordsMatch)
         if (!passwordsMatch) throw new LoginPasswordIncorrectError
 
-        const accessToken = generateAccessToken(user.id, "10s");
+        const accessToken = generateAccessToken(user.id, "24h");
         const refreshToken = await generateRefreshToken(user, request);
         const refreshTokenExpiry = await getTokenExp(refreshToken) as number * 1000;
 

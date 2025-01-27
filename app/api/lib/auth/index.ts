@@ -9,7 +9,7 @@ import { existsExtension } from '@/prisma/extensions/exists';
 
 const DEBUG = ((process.env.NODE_ENV ?? '') === 'development');
 const DEFAULT_IP = "::::";
-const db = new PrismaClient().$extends(existsExtension)
+// const db = new PrismaClient().$extends(existsExtension)
 
 
 /**
@@ -50,8 +50,12 @@ export const generateRefreshToken = async (user: User, request: NextRequest) => 
  */
 export const AuthenticateRequest = async (request: NextRequest): Promise<AccessTokenDetails> => {
     const accessToken = await extractAccessToken(request) ?? '';
+    console.log(accessToken)
     const accessTokenDetails = await validateAccessToken(accessToken);
-    const userExists = await db.user.exists({ id: accessTokenDetails.userId as number })
+    // const userExists = await db.user.exists({ id: accessTokenDetails.userId as number })
+    const userExists = (await db.user.findUnique({
+        where: { id: accessTokenDetails.userId as number },
+    })) !== null;
 
     if (!userExists) throw new LoginUserDoesNotExistError
 
@@ -76,7 +80,10 @@ export const AuthorizeRefreshToken = async (request: NextRequest): Promise<Refre
         throw new UnauthorizedUseOfTokenError
     }
 
-    const userExists = await db.user.exists({ id: refreshTokenDetails.userId as number })
+    // const userExists = await db.user.exists({ id: refreshTokenDetails.userId as number })
+    const userExists = (await db.user.findUnique({
+        where: { id: accessTokenDetails.userId as number },
+    })) !== null;
     if (!userExists) throw new UserNotFoundError
 
     return refreshTokenDetails;
@@ -92,7 +99,10 @@ export const revokeRefreshToken = async (refreshToken: string): Promise<void> =>
     const refreshTokenDetails = await validateRefreshToken(refreshToken);
     const signature = refreshToken.split('.')[2];
     const userID = refreshTokenDetails.userId as number;
-    const userExists = await db.user.exists({ id: userID })
+    // const userExists = await db.user.exists({ id: userID })
+    const userExists = (await db.user.findUnique({
+        where: { id: accessTokenDetails.userId as number },
+    })) !== null;
 
     if (!userExists) throw new UserNotFoundError
     

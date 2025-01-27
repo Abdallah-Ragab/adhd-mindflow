@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
             throw new RegisterEmailExistsError
         }
 
+        console.log(passwordExtension);
         const user = await db.user.create({
             data: {
                 email: body.email,
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
                 name: body.name
             }
         });
+        console.log(body.password);
 
         return NextResponse.json({
             message: 'User created successfully',
