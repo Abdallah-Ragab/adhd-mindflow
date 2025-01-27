@@ -22,79 +22,103 @@ model User {
   revokedTokens revokedToken[]
 }
 
-model Task {
-  id     Int       @id @default(autoincrement())
-  title  String
-  userId Int
-  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  logs   TaskLog[]
-
-  criteria  Criteria
-  // Time Based
-  goalTime  Int?
-  // Count Based
-  goalCount Int?
-
-  frequency Frequency
-  // One time Task
-  dueDate   DateTime? @default(now())
-  // Recurring Task
-  schedule  Schedule?
-  startDate DateTime?
-  endDate   DateTime?
-}
-
-model TaskLog {
-  id        Int      @id @default(autoincrement())
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Time Based
-  timer Timer?
-  // Count Based
-  count Int
-
-  done Boolean
-}
-
-model Timer {
-  id        Int      @id @default(autoincrement())
-  startTime DateTime
-  onSince   DateTime
-  elapsed   Int
-  on        Boolean
-  log       TaskLog  @relation(fields: [logId], references: [id], onDelete: Cascade)
-  logId     Int      @unique
-}
-
-model Schedule {
-  id        Int     @id @default(autoincrement())
-  taskId    Int     @unique
-  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  friday    Boolean @default(true)
-  saturday  Boolean @default(true)
-  sunday    Boolean @default(true)
-  monday    Boolean @default(true)
-  tuesday   Boolean @default(true)
-  wednesday Boolean @default(true)
-  thursday  Boolean @default(true)
-}
-
 model revokedToken {
   signature String @id
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 }
 
-enum Criteria {
-  Time
-  Count
-  Check
+model Task {
+  id     Int       @id @default(autoincrement())
+  title  String
+
+  userId Int
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs   TaskLog[]
+
+  type     TaskType
+  goal     Int
+  progress Int
+
+  schedule       Schedule
+  customSchedule CustomSchedule?
+
+  // One time Task
+  dueDate        DateTime?       @default(now())
+  // Recurring Tasks
+  startDate      DateTime?
+  endDate        DateTime?
+
+  description    String
+  isTimerRunning Boolean  @default(false)
+  isDone         Boolean  @default(false)
+  unit           String?
+
+  subtasks      SubTask[]
 }
 
-enum Frequency {
-  Onetime
-  Recurring
+model SubTask {
+  id        Int      @id @default(autoincrement())
+  title     String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    Int
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  TaskLog TaskLog[]
+}
+
+model TaskLog {
+  id        Int      @id @default(autoincrement())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    Int
+  timestamp DateTime 
+
+  event    Event
+
+  subTask  SubTask? @relation(fields: [subTaskId], references: [id], onDelete: SetNull)
+  subTaskId Int?
+}
+
+model CustomSchedule {
+  id        Int     @id @default(autoincrement())
+  taskId    Int     @unique
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fri    Boolean @default(true)
+  sat  Boolean @default(true)
+  sun    Boolean @default(true)
+  mon    Boolean @default(true)
+  tue   Boolean @default(true)
+  wed Boolean @default(true)
+  thu  Boolean @default(true)
+}
+
+enum Event {
+  taskCreated
+  taskUpdated
+  taskDeleted
+  taskDone
+  taskUndone
+  timerStart
+  timerStop
+  SubTaskDone
+  SubTaskUndone
+  countUp
+  countDown
+}
+
+
+enum Schedule {
+  daily
+  weekly
+  custom
+  once
+}
+
+enum TaskType {
+  time
+  count
+  checklist
+  checkbox
 }

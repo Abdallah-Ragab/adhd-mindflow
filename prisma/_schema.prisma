@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String?
+  password      String?
+  tasks         Task[]
+  revokedTokens revokedToken[]
+}
+
+model Task {
+  id     Int       @id @default(autoincrement())
+  title  String
+  userId Int
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs   TaskLog[]
+
+  criteria  Criteria
+  // Time Based
+  goalTime  Int?
+  // Count Based
+  goalCount Int?
+
+  frequency Frequency
+  // One time Task
+  dueDate   DateTime? @default(now())
+  // Recurring Task
+  schedule  Schedule?
+  startDate DateTime?
+  endDate   DateTime?
+}
+
+model TaskLog {
+  id        Int      @id @default(autoincrement())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Time Based
+  timer Timer?
+  // Count Based
+  count Int
+
+  done Boolean
+}
+
+model Timer {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime
+  onSince   DateTime
+  elapsed   Int
+  on        Boolean
+  log       TaskLog  @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId     Int      @unique
+}
+
+model Schedule {
+  id        Int     @id @default(autoincrement())
+  taskId    Int     @unique
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  friday    Boolean @default(true)
+  saturday  Boolean @default(true)
+  sunday    Boolean @default(true)
+  monday    Boolean @default(true)
+  tuesday   Boolean @default(true)
+  wednesday Boolean @default(true)
+  thursday  Boolean @default(true)
+}
+
+model revokedToken {
+  signature String @id
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+}
+
+enum Criteria {
+  Time
+  Count
+  Check
+}
+
+enum Frequency {
+  Onetime
+  Recurring
+}
