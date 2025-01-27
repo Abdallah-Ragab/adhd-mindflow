@@ -2,22 +2,22 @@ import { Input, IconButton, Typography } from '@mui/joy';
 import { SearchRounded } from '@mui/icons-material';
 export function Search() {
     return <Input
-        size="sm"
+        size="md"
         variant="outlined"
-        placeholder="Search anything…"
-        startDecorator={<SearchRounded color="primary" />}
+        placeholder="Search tasks"
+        startDecorator={<SearchRounded  />}
         endDecorator={<IconButton
             variant="outlined"
             color="neutral"
         >
             <Typography level="title-sm" textColor="text.icon">
-                ⌘ K
+                Enter
             </Typography>
         </IconButton>}
         sx={{
             alignSelf: 'center',
             display: {
-                xs: 'none',
+                // xs: 'none',
                 sm: 'flex',
             },
         }} />;

@@ -91,7 +91,7 @@ export default function TaskForm () {
             <div>
                 <Typography className="text-lg font-bold">New Task</Typography>
                 <Typography className="text-md" color='neutral'>
-                    create a new task with different ways to track completion and rate it based on different criteria so we can get a better understanding of your task and help you prioritize your daily tasks
+                    Create a new task, choose a completion criteria, and rate it to help prioritize your daily tasks.
                 </Typography>
             </div>
 
@@ -123,25 +123,25 @@ export default function TaskForm () {
                 label='How would you track the task completion ?'
                 selections={[
                     { name: "Time", value: "time", description: "by Time spent", icon: TimerIcon },
-                    { name: "Check", value: "todo", description: "Mark as done", icon: CheckBoxIcon },
-                    { name: "Count", value: "count", description: "Number of times", icon: NumbersIcon }
+                    { name: "Checkbox", value: "todo", description: "Mark as done", icon: CheckBoxIcon },
+                    { name: "Repetitions", value: "repetitions", description: "Number of times", icon: NumbersIcon }
                 ]}
                 fullWidth={true}
                 state={[criteria, setCriteria]}
 
             />
-
+{/* 
             <RadioGroupSelection
                 label='How would you track the task completion ?'
                 selections={[
                     { name: "Time", value: "time", description: "by Time spent", icon: TimerIcon },
-                    { name: "Check", value: "todo", description: "Mark as done", icon: CheckBoxIcon },
-                    { name: "Count", value: "count", description: "Number of times", icon: NumbersIcon }
+                    { name: "Checkbox", value: "todo", description: "Mark as done", icon: CheckBoxIcon },
+                    { name: "Repetitions", value: "repetitions", description: "Number of times", icon: NumbersIcon }
                 ]}
                 fullWidth={true}
                 state={[criteria, setCriteria]}
 
-            />
+            /> */}
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker label="Deadline" value={date} onChange={(newValue) => { setDate(newValue) }}
@@ -150,12 +150,12 @@ export default function TaskForm () {
                     format='DD/MM/YYYY'
                 />
             </LocalizationProvider>
-            <div className='flex flex-row space-x-2 items-center'>
+            {/* <div className='flex flex-row space-x-2 items-center'>
                 <span className='whitespace-nowrap'>I will</span> <Input placeholder='run' className='w-28' /> <Input placeholder='5 miles' className='w-' /> <Input placeholder='everyday' className='w-28' />
-            </div>
+            </div> */}
             <FormControl>
                 <Checkbox label="Timed Task" defaultChecked />
-                <FormHelperText>Do you spend time working on this task, or is it more like a reminder? Timing tasks can help you monitor progress and stay focused on completing your goals.</FormHelperText>
+                <FormHelperText>Do you want to time this task? Timing tasks can help track progress and stay focused.</FormHelperText>
             </FormControl>
             <div className="flex flex-row m-0 space-x-2 justify-center">
                 {Object.keys(scheduledDays).map((day, idx) => {
@@ -167,14 +167,7 @@ export default function TaskForm () {
                         </Button>
                     )
                 })}
-                {/* <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Sat</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Sun</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Mon</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Tue</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Wed</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Thu</Button>
-                <Button className='w-10 h-10 rounded-xl min-w-0 text-xs' color='primary' variant='soft' onClick={ } size='sm'>Fri</Button> */}
-            </div>
+               </div>
             <RangeRatingSlider
                 label={`How would you rate this task's ${ratings.interest.title}?`}
                 marks={ratings.interest.marks}

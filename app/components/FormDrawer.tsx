@@ -1,11 +1,11 @@
-'use client';
+// 'use client';
 
 import { Box, Button, Drawer } from "@mui/joy";
 import React from "react";
-import Task from "./Tasks";
+import Task from "./tasks";
 
-export default function FormDrawer() {
-    const [open, setOpen] = React.useState(false);
+export default function FormDrawer({state}: {state:[boolean, (state:boolean)=>void]}) {
+    const [open, setOpen] = state;
 
     const toggleDrawer = (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
         if (
@@ -22,10 +22,7 @@ export default function FormDrawer() {
     return (
         <>
         <Box sx={{ display: 'flex' }}>
-            <Button variant="outlined" color="neutral" onClick={toggleDrawer(true)}>
-                Open drawer
-            </Button>
-            <Drawer open={open} anchor="right" onClose={toggleDrawer(false)} size='md'>
+            <Drawer open={open} anchor="right" onClose={setOpen(false)} size='md'>
                 <Task.Form />
             </Drawer>
         </Box>
