@@ -14,7 +14,7 @@ export interface RefreshTokenDetails extends AccessTokenDetails {
  * @param {string} token - The JWT token to decode.
  * @returns {Promise<any>} A promise that resolves to the decoded token payload.
  */
-export const decodeToken = async (token: string) : Promise<{ sub: number, exp: number, ip?:string }> => {
+export const decodeToken = async (token: string): Promise<{ sub: number, exp: number, ip?: string }> => {
     // @ts-ignore
     return await verify(token, process.env.JWT_SECRET as Secret, (err, decoded) => {
         if (err) throw parseJWTError(err)
@@ -40,10 +40,14 @@ export const getTokenExp = async (token: string): Promise<number | null> => {
  * and error status.
  */
 export const validateAccessToken = async (accessToken: string): Promise<AccessTokenDetails> => {
-    const decodedToken = await decodeToken(accessToken);
-    return {
-        userId: decodedToken?.sub,
-        expiresAt: decodedToken?.exp,
+    try {
+        const decodedToken = await decodeToken(accessToken);
+        return {
+            userId: decodedToken?.sub,
+            expiresAt: decodedToken?.exp,
+        }
+    } catch (error) {
+        throw error;
     }
 }
 
