@@ -57,11 +57,15 @@ export const validateAccessToken = async (accessToken: string): Promise<AccessTo
  * @returns {Promise<RefreshTokenDetails>} An object containing the decoded information from the refresh token.
  */
 export const validateRefreshToken = async (refreshToken: string): Promise<RefreshTokenDetails> => {
-    const decodedToken = await decodeToken(refreshToken);
-    return {
-        userId: decodedToken?.sub,
-        ip: decodedToken?.ip,
-        expiresAt: decodedToken?.exp,
+    try {
+        const decodedToken = await decodeToken(refreshToken);
+        return {
+            userId: decodedToken?.sub,
+            ip: decodedToken?.ip,
+            expiresAt: decodedToken?.exp,
+        }
+    } catch (error) {
+        throw error;
     }
 }
 
