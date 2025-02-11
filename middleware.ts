@@ -3,10 +3,9 @@ import type { NextRequest } from 'next/server'
 import { extractAccessToken } from './app/api/lib/request'
 import { validateAccessToken } from './app/api/lib/jwt'
 import { ApiException, getAPIExceptionResponse } from './app/api/lib/error'
-import { ExpiredTokenError, MissingTokenError, TokenError } from './app/api/lib/jwt/errors'
+import { ExpiredTokenError, TokenError } from './app/api/lib/jwt/errors'
 
 export async function middleware(request: NextRequest) {
-  console.log("Middleware")
   try {
     // Get token
     const accessToken = await extractAccessToken(request)
@@ -14,6 +13,8 @@ export async function middleware(request: NextRequest) {
     // validate the token
     const accessTokenDetails = await validateAccessToken(accessToken)
     console.log(accessTokenDetails)
+    // set user ID in request object
+    request.headers.set('x-user-id', accessTokenDetails.userId as unknown as string)
     // proceed to next middleware
     return NextResponse.next()
   }
@@ -33,6 +34,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/tasks/:path*",
-    "/api/:path*",
+    "/api/tasks/:path*",
   ]
 }
