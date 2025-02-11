@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { extractRefreshToken } from "@/app/api/lib/request";
 import { revokeRefreshToken } from "@/app/api/lib/auth";
-import { handleApiException } from "@/app/api/lib/error";
+import { getAPIExceptionResponse } from "@/app/api/lib/error";
 import { MissingTokenError } from "../../lib/jwt/errors";
 
 const db = new PrismaClient();
@@ -30,7 +30,7 @@ async function logout(request: NextRequest) {
 
         return response;
     } catch (err: Error | any) {
-        handleApiException(err);
+        getAPIExceptionResponse(err);
     }
     finally {
         await db.$disconnect();

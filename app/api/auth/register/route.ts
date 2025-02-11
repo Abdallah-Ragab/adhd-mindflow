@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiException } from "../../lib/error";
+import { getAPIExceptionResponse } from "../../lib/error";
 import { passwordExtension } from "@/prisma/extensions/password";
 import { existsExtension } from "@/prisma/extensions/exists";
 import { schema, type } from "./schema";
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         }, { status: 201 });
 
     } catch (err: Error | any) {
-        return handleApiException(err);
+        return getAPIExceptionResponse(err);
     }
     finally {
         await db.$disconnect();
