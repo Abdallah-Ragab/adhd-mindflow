@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { MissingTokenError } from '../jwt/errors';
 
 const DEBUG = ((process.env.NODE_ENV ?? '') === 'development');
 const DEFAULT_IP = "::::";
@@ -10,22 +11,16 @@ const DEFAULT_IP = "::::";
  * @returns {Promise<string | null>} The access token if found, otherwise null.
  */
 export const extractAccessToken = async (request: NextRequest) => {
-    try {
-        const authorizationHeader = request.headers.get('Authorization');
-        if (authorizationHeader) {
-            const accessToken = authorizationHeader.split(' ')[1];
-            return accessToken;
-        } else {
-            const cookie = await request.cookies.get('accesstoken');
-            return cookie?.value ?? null;
-        }
-    } catch (err: Error | any) {
-        if (DEBUG) {
-            console.error("Caught Error: " + err.message);
-        }
-        // Handle error when body is empty or not in JSON format
-        return null;
+    let accessToken: string | null;
+    const authorizationHeader = request.headers.get('Authorization');
+    if (authorizationHeader) {
+        accessToken = authorizationHeader.split(' ')[1];
+    } else {
+        const cookie = await request.cookies.get('accesstoken');
+        accessToken = cookie?.value ?? null;
     }
+    if (!accessToken) { throw new MissingTokenError() }
+    return accessToken;
 }
 
 /**

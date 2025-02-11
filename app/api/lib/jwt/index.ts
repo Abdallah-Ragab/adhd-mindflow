@@ -36,18 +36,13 @@ export const getTokenExp = async (token: string): Promise<number | null> => {
  * Validates the access token by decoding it and extracting the user ID, expiration time,
  * and error status.
  * @param {string} accessToken - The access token to validate.
- * @returns A Promise that resolves to an object containing the user ID, expiration time,
- * and error status.
+ * @returns A Promise that resolves to an object containing the user ID, expiration time.
  */
 export const validateAccessToken = async (accessToken: string): Promise<AccessTokenDetails> => {
-    try {
-        const decodedToken = await decodeToken(accessToken);
-        return {
-            userId: decodedToken?.sub,
-            expiresAt: decodedToken?.exp,
-        }
-    } catch (error) {
-        throw error;
+    const decodedToken = await decodeToken(accessToken);
+    return {
+        userId: decodedToken.sub,
+        expiresAt: decodedToken.exp,
     }
 }
 

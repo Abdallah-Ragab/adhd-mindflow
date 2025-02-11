@@ -10,12 +10,11 @@ type traceObject = {
     column: string
 }
 
-export const handleApiException = (error: ApiException | Error) => {
+export const getAPIExceptionResponse = (error: ApiException | Error) => {
     if (typeof error === 'function') {
         throw new Error(`Expected an instance of Error class but got a reference to the class instead`);
     }
 
-    // const exception = error instanceof ApiException ? error : ServerException.fromError(error)
     const exception = error instanceof ApiException ? error : new ServerException(Exception.fromError(error))
 
     if (DEBUG) {
