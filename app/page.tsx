@@ -15,7 +15,7 @@ const LandingPage = () => {
         <Box
           sx={{
             height: '100vh',
-            backgroundImage: 'url("/path-to-your-cover-image.jpg")', // replace with your cover image
+            backgroundImage: 'url("/landing.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             display: 'flex',
@@ -24,6 +24,7 @@ const LandingPage = () => {
             alignItems: 'center',
             textAlign: 'center',
             color: '#fff',
+            
           }}
         >
           <Typography level="h1" fontSize="4rem">
@@ -33,7 +34,7 @@ const LandingPage = () => {
             Enhancing Productivity for ADHD Minds
           </Typography>
           <Box sx={{ mt: 4 }}>
-            <Button variant="solid" size="lg" component={Link} href="/tasks">
+            <Button variant="solid" size="lg" component={Link} href="/login">
               Start Using MindFlow
             </Button>
           </Box>
@@ -126,13 +127,13 @@ const LandingPage = () => {
           <Box sx={{ mt: 4 }}>
             <Typography level="h4">Developer</Typography>
             <Typography>
-              <Link href="https://linkedin.com" target="_blank">LinkedIn</Link> | <Link href="https://github.com" target="_blank">GitHub</Link> | <Link href="https://twitter.com" target="_blank">Twitter</Link>
+              <Link href="https://linkedin.com/in/abdallah-ragab-a39bb2229" target="_blank">LinkedIn</Link> | <Link href="https://github.com/Abdallah-Ragab/" target="_blank">GitHub</Link> | <Link href="https://twitter.com" target="_blank">Twitter</Link>
             </Typography>
           </Box>
 
           {/* GitHub Repository Link */}
           <Box sx={{ mt: 4 }}>
-            <Button variant="solid" component={Link} href="https://github.com/your-repo-link" target="_blank">
+            <Button variant="solid" component={Link} href="https://github.com/Abdallah-Ragab/adhd-mindflow" target="_blank">
               View on GitHub
             </Button>
           </Box>
