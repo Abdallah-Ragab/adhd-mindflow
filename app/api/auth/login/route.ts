@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { passwordExtension } from "@/prisma/extensions/password";
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiException, ValidationException } from "@/app/api/lib/error";
+import { getAPIExceptionResponse, ValidationException } from "@/app/api/lib/error";
 import { generateAccessToken, generateRefreshToken } from "@/app/api/lib/auth";
 import { getTokenExp } from "@/app/api/lib/jwt";
 import { schema } from "./schema";
@@ -33,10 +33,9 @@ export async function POST(request: NextRequest) {
         if (!user) throw new LoginUserDoesNotExistError
 
         const passwordsMatch = user.verifyPassword(validation.data.password);
-        console.log(passwordsMatch)
         if (!passwordsMatch) throw new LoginPasswordIncorrectError
 
-        const accessToken = generateAccessToken(user.id, "24h");
+        const accessToken = await generateAccessToken(user.id, "24h");
         const refreshToken = await generateRefreshToken(user, request);
         const refreshTokenExpiry = await getTokenExp(refreshToken) as number * 1000;
 
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
         return response;
 
     } catch (err: Error | any) {
-        return handleApiException(err);
+        return getAPIExceptionResponse(err);
     }
     finally {
         await db.$disconnect();
