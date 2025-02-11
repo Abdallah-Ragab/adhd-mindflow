@@ -1,15 +1,15 @@
-import { Secret, sign } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { NextRequest } from 'next/server';
 import { PrismaClient } from "@prisma/client";
 import { extractAccessToken, extractRefreshToken, extractIPAddress } from '@/app/api/lib/request'
 import { validateRefreshToken, validateAccessToken, decodeToken, AccessTokenDetails, RefreshTokenDetails } from '@/app/api/lib/jwt'
 import { UnauthorizedUseOfTokenError, LoginUserDoesNotExistError, UserNotFoundError } from './errors';
-import { existsExtension } from '@/prisma/extensions/exists';
+// import { existsExtension } from '@/prisma/extensions/exists';
+import { SignJWT } from 'jose';
 
 const DEBUG = ((process.env.NODE_ENV ?? '') === 'development');
 const DEFAULT_IP = "::::";
-// const db = new PrismaClient().$extends(existsExtension)
+const db = new PrismaClient()//.$extends(existsExtension)
 
 
 /**
@@ -18,12 +18,11 @@ const DEFAULT_IP = "::::";
  * @param {string} [duration='1h'] - The duration of the token validity (default is 1 hour).
  * @returns {string} The generated access token.
  */
-export const generateAccessToken = (userId: number, duration: string = '1h') => {
-    return sign(
-        { 'sub': userId },
-        process.env.JWT_SECRET as Secret,
-        { expiresIn: duration }
-    )
+export const generateAccessToken = async (userId: number, duration: string = '1h') => {
+    return await new SignJWT({ sub: userId.toString() })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime(duration)
+        .sign(new TextEncoder().encode(process.env.JWT_SECRET));
 }
 
 /**
@@ -34,11 +33,10 @@ export const generateAccessToken = (userId: number, duration: string = '1h') => 
  */
 export const generateRefreshToken = async (user: User, request: NextRequest) => {
     const ip = await extractIPAddress(request);
-    return sign(
-        { 'sub': user.id, 'ip': ip },
-        process.env.JWT_SECRET as Secret,
-        { expiresIn: '7d' }
-    )
+    return await new SignJWT({ sub: user.id.toString(), ip })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime('7d')
+        .sign(new TextEncoder().encode(process.env.JWT_SECRET));
 }
 
 /**

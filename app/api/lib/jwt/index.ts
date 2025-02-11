@@ -1,4 +1,4 @@
-import { Secret, verify, VerifyErrors } from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import { ExpiredTokenError, InvalidTokenError, MissingTokenError, TokenError } from "./errors";
 
 export type AccessTokenDetails = {
@@ -15,11 +15,19 @@ export interface RefreshTokenDetails extends AccessTokenDetails {
  * @returns {Promise<any>} A promise that resolves to the decoded token payload.
  */
 export const decodeToken = async (token: string): Promise<{ sub: number, exp: number, ip?: string }> => {
-    // @ts-ignore
-    return await verify(token, process.env.JWT_SECRET as Secret, (err, decoded) => {
-        if (err) throw parseJWTError(err)
-        return decoded;
-    });
+    try {
+        const { payload } = await jwtVerify(
+            token,
+            new TextEncoder().encode(process.env.JWT_SECRET)
+        );
+        return {
+            sub: typeof payload.sub === 'string' ? parseInt(payload.sub) : payload.sub,
+            exp: payload.exp!,
+            ip: payload.ip as string | undefined
+        };
+    } catch (err) {
+        throw parseJoseError(err);
+    }
 }
 
 /**
@@ -66,14 +74,14 @@ export const validateRefreshToken = async (refreshToken: string): Promise<Refres
 
 /**
  * Parses a JWT error and returns the corresponding error object.
- * @param {VerifyErrors | any} error - The JWT verification error object.
+ * @param {any} error - The JWT verification error object.
  * @returns {ExpiredTokenError | MissingTokenError | InvalidTokenError | TokenError} - The corresponding error object based on the JWT error.
  */
-export const parseJWTError = (error: VerifyErrors | any) => {
-    if (error.name === 'TokenExpiredError') return new ExpiredTokenError
-    else if (error.name === 'JsonWebTokenError') {
-        if (error.message === 'jwt must be provided') return new MissingTokenError
-        else return new InvalidTokenError
+export const parseJoseError = (error: any) => {
+    // Map jose error codes to existing error classes
+    if (error.code === 'ERR_JWT_EXPIRED') return new ExpiredTokenError
+    if (error.code === 'ERR_JWS_INVALID' || error.code === 'ERR_JWS_VERIFICATION_FAILED') {
+        return new InvalidTokenError
     }
     return new TokenError
 }
